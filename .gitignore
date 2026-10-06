@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+evals/results_*.csv
+.streamlit/
+
+# NOTE: eval/cache/llm_cache.json IS intentionally committed so that
+# `make eval` reproduces the published numbers from a clean checkout with no
+# API key. Do not add it to this file.
