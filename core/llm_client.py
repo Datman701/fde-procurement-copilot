@@ -221,6 +221,7 @@ class DiskCache:
         with self._lock:
             self._data[key] = entry
             self.writes += 1
+        self.flush()
 
     def flush(self) -> None:
         if not self.enabled:
@@ -230,7 +231,9 @@ class DiskCache:
             os.makedirs(directory, exist_ok=True)
         tmp = f"{self.path}.tmp"
         with open(tmp, "w", encoding="utf-8") as handle:
-            json.dump(self._data, handle, indent=1, sort_keys=True)
+            # default=str: a provider response that carries a bytes value must
+            # never abort the run at cache-write time.
+            json.dump(self._data, handle, indent=1, sort_keys=True, default=str)
         os.replace(tmp, self.path)
 
     def __len__(self) -> int:

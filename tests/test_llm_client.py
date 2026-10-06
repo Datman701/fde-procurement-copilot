@@ -81,9 +81,10 @@ def make_client(tmp_path, responses=None, fail_times=0, **overrides):
 # --------------------------------------------------------------------------- #
 class TestProviderResolution:
     def test_no_provider_is_hardcoded(self):
-        """Every provider's base URL comes from the registry, not the code path."""
+        """The registry, not client logic, selects each provider adapter."""
+        assert PROVIDERS["gemini"]["module"] == "core.llm_providers.gemini"
         for name, spec in PROVIDERS.items():
-            assert spec["module"] == "core.llm_providers.openai_compat"
+            assert spec["function"] == "make_provider", name
             assert spec["base_url"].startswith("http")
 
     def test_resolve_from_environment(self):

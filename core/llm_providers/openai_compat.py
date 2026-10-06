@@ -34,6 +34,8 @@ class OpenAICompatProvider:
         self.config = config
 
     # -- public ------------------------------------------------------------ #
+    __call__ = complete = None  # placeholder for typing
+
     def complete(
         self,
         messages: list[dict[str, Any]],

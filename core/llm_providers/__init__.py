@@ -20,12 +20,12 @@ from core.llm_client import LLMConfig
 
 PROVIDERS: dict[str, dict[str, Any]] = {
     "gemini": {
-        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "base_url": "https://generativelanguage.googleapis.com",
         "env_key": "GEMINI_API_KEY",
-        "transport": "openai_compat",
-        "module": "core.llm_providers.openai_compat",
+        "transport": "google_genai",
+        "module": "core.llm_providers.gemini",
         "function": "make_provider",
-        "note": "Google AI Studio free tier; reached through its OpenAI-compatible endpoint.",
+        "note": "Google AI Studio via the official google-genai SDK.",
     },
     "openai": {
         "base_url": "https://api.openai.com/v1",
@@ -77,6 +77,13 @@ DEFAULT_MODEL_BY_PROVIDER = {
 
 
 def resolve(env: dict[str, str] | None = None) -> LLMConfig:
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(override=False)
+    except ImportError:
+        pass
+
     env = env if env is not None else os.environ
 
     provider = (env.get("LLM_PROVIDER") or "gemini").strip().lower()
