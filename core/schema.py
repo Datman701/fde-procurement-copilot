@@ -70,10 +70,15 @@ class ToolResult(BaseModel):
         return self.data.get(key, default)
 
     def brief(self) -> str:
-        """Short, prompt-safe rendering of the payload."""
+        """Prompt-safe rendering of the payload, prefixed with the result_id.
+
+        The agent is told to cite ``result_id`` in its evidence, so the id has to
+        be visible in the tool output it reads.
+        """
+        header = f"{self.result_id} [{self.tool}] source={self.source} as_of={self.as_of}"
         if not self.ok:
-            return f"{self.tool} FAILED: {self.error}"
-        return json.dumps(self.data, default=str, sort_keys=True)[:4000]
+            return f"{header}\nFAILED: {self.error}"
+        return f"{header}\n" + json.dumps(self.data, default=str, sort_keys=True)[:4000]
 
 
 # --------------------------------------------------------------------------- #

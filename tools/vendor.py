@@ -139,7 +139,28 @@ def run(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]:
         vendor_name = ctx.request.vendor_name
     vendor_name = str(vendor_name or "").strip()
     if not vendor_name:
-        raise ToolError("vendor_name is required")
+        # Not a tool failure: we never had the information. Reported as a
+        # successful call with `input_missing` so the guardrail raises it as
+        # missing_information rather than pretending a check was lost.
+        return {
+            "vendor_name": None,
+            "input_missing": True,
+            "in_registry": False,
+            "is_new_vendor": False,
+            "legal_terms_status": "Unknown",
+            "service": None,
+            "security_verdict": "unknown",
+            "review_current": False,
+            "review_expired": False,
+            "review_missing_or_incomplete": True,
+            "processes_personal_data": False,
+            "stores_data_outside_region": False,
+            "conflicts": [],
+            "material_conflict": False,
+            "policy_clause": "P1-REQUIRED-INFO",
+            "reason": "no vendor name was supplied or stated in the request",
+            "as_of": policy.as_of_iso(),
+        }
 
     registry_vendor = store.vendor(vendor_name)
 

@@ -177,7 +177,19 @@ def compute(results: list[ToolResult], request: object | None = None) -> CodeFin
                 f"vendor-risk service unavailable: {result.error}. Policy section 10 - a missing "
                 "check must not be read as a favourable status",
             )
-    if vendor:
+    if vendor and vendor.data.get("input_missing"):
+        # We never had a vendor name. That is missing information, not a lost check.
+        add_flag(
+            policy.FLAG_MISSING_INFORMATION,
+            "warning",
+            vendor.result_id,
+            "no vendor name available, so vendor security/privacy status could not be checked",
+        )
+        missing.append(
+            "vendor name is missing - without it no security, privacy or legal review can be "
+            "completed"
+        )
+    if vendor and not vendor.data.get("input_missing"):
         verdict = vendor.data.get("security_verdict")
         source = vendor.result_id
         if verdict == "expired":
