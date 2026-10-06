@@ -147,7 +147,6 @@ def run_case(case: dict[str, Any], architecture: str, use_cache: bool) -> dict[s
     from app.analyze import analyze
     from core.data import DataStore
     from eval.metrics import score_case
-    from tools.registry import build_registry
 
     overlay = case.get("overlay")
     store = DataStore.load(overlay)
@@ -155,19 +154,22 @@ def run_case(case: dict[str, Any], architecture: str, use_cache: bool) -> dict[s
     parsed_request = store.request(request.get("request_id", "")) or request
 
     started = time.perf_counter()
+    observed: list = []
     decision = analyze(
         parsed_request,
         architecture=architecture,
         overlay=overlay,
         use_cache=use_cache,
         store=store,
+        tool_result_sink=observed.extend,
     )
     wall_ms = (time.perf_counter() - started) * 1000
 
-    # Re-derive the raw tool results so grounding is checked against the actual
-    # payloads this case produced, including overlay-simulated ones.
-    registry = build_registry(store, parsed_request)
-    results = registry.all()
+    # The envelopes this run actually produced, captured from the shared
+    # registry. Grounding must be checked against these: a freshly built
+    # registry has not executed any tools, so it would score every evidence
+    # item as ungrounded.
+    results = observed
 
     scored = score_case(case, decision, results)
     scored.latency_ms = round(wall_ms, 1)

@@ -19,7 +19,17 @@ def _flatten(value: Any) -> str:
 
 
 def _normalise(text: str) -> str:
-    return text.lower().replace(",", "").replace("$", "").replace("_", " ")
+    """Same rule as the guardrail: lowercase and drop punctuation/whitespace so
+    JSON formatting differences cannot fail a substantive match."""
+    cleaned = (
+        text.lower()
+        .replace(",", "")
+        .replace("$", "")
+        .replace("'", "")
+        .replace('"', "")
+        .replace(":", "")
+    )
+    return "".join(cleaned.split())
 
 
 def _as_number(text: str) -> float | None:
