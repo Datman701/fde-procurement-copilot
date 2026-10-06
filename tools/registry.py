@@ -51,6 +51,10 @@ class ToolContext:
     def resolve_request(self, request_id: str | None) -> PurchaseRequest:
         """A ``request_id`` argument is a lookup key, never a data channel."""
         if request_id:
+            # The in-scope request resolves by its own id even when it is not a
+            # stored row (synthetic/overlay requests in eval and free-text runs).
+            if self.request is not None and request_id == self.request.request_id:
+                return self.request
             found = self.store.request(request_id)
             if found is None:
                 raise ToolError(f"unknown request_id {request_id!r}")

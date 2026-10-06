@@ -396,8 +396,11 @@ def _deterministic_recommendation(
         or policy.FLAG_VENDOR_REVIEW_EXPIRED in flag_names
         or policy.FLAG_CONFLICTING_VENDOR in flag_names
         or policy.FLAG_SECURITY_REQUIRED in flag_names
+        or policy.FLAG_PROMPT_INJECTION in flag_names
         or security_sensitive
     ):
+        # Injection outranks catalog overlap: a request that tries to manipulate
+        # the copilot goes to security review even if the product is approved.
         return "escalate_security_review"
     if budget_insufficient:
         return "escalate_security_review"

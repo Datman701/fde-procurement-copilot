@@ -47,6 +47,19 @@ def _int(value: Any) -> int | None:
         return None
 
 
+def _number(value: Any) -> float | None:
+    """Decimal-preserving coercion. Financial bands are cent-exact (policy
+    section 4: 1000.01 belongs to the Department Head tier, not the Manager
+    tier), so request amounts must not be truncated to integers."""
+    text = _text(value)
+    if not text:
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
 def _bool(value: Any) -> bool | None:
     text = _text(value).lower()
     if not text:
@@ -139,7 +152,7 @@ class PurchaseRequest:
     product_name: str
     vendor_name: str
     category: str
-    annual_cost_usd: int | None
+    annual_cost_usd: float | None
     user_count: int | None
     business_justification: str
     data_access_level: str
@@ -157,7 +170,7 @@ class PurchaseRequest:
             product_name=_text(raw.get("product_name")),
             vendor_name=_text(raw.get("vendor_name")),
             category=_text(raw.get("category")),
-            annual_cost_usd=_int(raw.get("annual_cost_usd")),
+            annual_cost_usd=_number(raw.get("annual_cost_usd")),
             user_count=_int(raw.get("user_count")),
             business_justification=_text(raw.get("business_justification")),
             data_access_level=_text(raw.get("data_access_level")).lower() or "unknown",

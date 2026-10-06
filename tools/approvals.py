@@ -62,6 +62,13 @@ def run(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]:
     registry = ctx.store
     request = ctx.resolve_request(args.get("request_id"))
 
+    def _latest_id(tool_name: str) -> str | None:
+        """Most recent ``tool_name`` result this run, used when the model did not
+        pass an explicit link. result_ids are zero-padded call indices, so
+        lexicographic order is call order."""
+        ids = [r.result_id for r in ctx.registry_results.values() if r.tool == tool_name]
+        return max(ids) if ids else None
+
     amount = args.get("amount_usd", request.annual_cost_usd)
     amount = None if amount in (None, "") else float(amount)
     data_access = str(
@@ -76,7 +83,7 @@ def run(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]:
     vendor_name = str(args.get("vendor_name", request.vendor_name) or "").strip()
     vendor_result = _lookup(
         ctx.registry_results,
-        args.get("vendor_result_id"),
+        args.get("vendor_result_id") or _latest_id("vendor_status"),
         "vendor_status",
         allow_failed=True,
     )
@@ -147,7 +154,12 @@ def run(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]:
             require(approver, financial_note, clause)
 
     # ------------------------------------------------- section 2: budget
-    budget_result = _lookup(ctx.registry_results, args.get("budget_result_id"), "budget_check")
+    budget_result = _lookup(
+        ctx.registry_results,
+        args.get("budget_result_id") or _latest_id("budget_check"),
+        "budget_check",
+        allow_failed=True,
+    )
     budget_data = budget_result.data if budget_result else {}
     budget_insufficient = budget_data.get("fits_within_available") is False
     if budget_insufficient:

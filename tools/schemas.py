@@ -50,13 +50,10 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
     ),
     "budget_check": _schema(
         "budget_check",
-        "Compare the annual cost against the department's available software budget and "
-        "return the shortfall. Deterministic. Use department_budgets.csv only.",
-        {
-            "department": _STR,
-            "employee_id": _STR,
-            "amount_usd": {**_NUM, "description": "Annual amount; omit to use the request's stated cost."},
-        },
+        "Compare the request's stated annual cost against the requester's department "
+        "available software budget and return the shortfall. The department is resolved "
+        "from the request automatically. Deterministic.",
+        {},
         [],
     ),
     "vendor_status": _schema(
@@ -69,13 +66,12 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
     ),
     "approval_router": _schema(
         "approval_router",
-        "Deterministic policy engine. Given the amount, department, data-access level, "
-        "integrations and vendor facts, returns the required approvers with a reason and a "
-        "policy clause identifier for each, plus which review gates apply. Pass "
-        "vendor_result_id / budget_result_id from earlier calls so live evidence is used.",
+        "Deterministic policy engine. Uses the request's stated annual cost, department, "
+        "data-access level, integrations and vendor facts, and returns the required "
+        "approvers with a reason and a policy clause identifier for each, plus which "
+        "review gates apply. Pass vendor_result_id / budget_result_id from earlier calls "
+        "so live evidence is used.",
         {
-            "amount_usd": _NUM,
-            "department": _STR,
             "data_access_level": _STR,
             "requested_integrations": _STRINGS,
             "category": _STR,
