@@ -22,17 +22,19 @@ from typing import Any
 from core import policy
 from tools.registry import ToolContext
 
+#: Phrases that mean "more of the thing we already buy", not a new purchase.
+#: Deterministic keyword rule - the human still judges whether it is credible.
 EXPANSION_PATTERNS = (
-    r"\bexpand",
-    r"\bexpansion",
-    r"\brenew",
-    r"\brenewal",
-    r"\badditional\s+(?:seat|user|licen)",
-    r"\bmore\s+(?:seat|user|licen)",
-    r"\badditional\s+\w+\s+squad",
-    r"\badd(?:ing)?\s+(?:seat|user|licen)",
+    r"\bexpand(?:ing|s|ed)?\b",
     r"\bexpan\w+\s+to\b",
-    r"\bsecond\s+(?:squad|team|wave)",
+    r"\brenew(?:al|ing|s)?\b",
+    r"\badditional\s+\w+",
+    r"\bmore\s+(?:seat|user|licen|capacity)",
+    r"\badd(?:ing)?\s+(?:seat|user|licen|squad|team)",
+    r"\bextend(?:ing|s)?\b",
+    r"\bsecond\s+(?:squad|team|wave|phase)",
+    r"\bupgrade\b",
+    r"\broll(?:ed)?\s+out\b",
 )
 
 _STOPWORDS = {

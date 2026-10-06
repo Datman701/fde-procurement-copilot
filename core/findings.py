@@ -124,20 +124,33 @@ def compute(results: list[ToolResult], request: object | None = None) -> CodeFin
         )
 
     # ---------------------------------------------------------- section 3
+    # Overlap with an *expansion* reason is a different situation from overlap
+    # with no reason, so it gets a different flag and a different severity.
     has_strong_overlap = False
+    has_expansion = False
     if catalog:
         candidates = catalog.data.get("candidates", [])
         strong = [c for c in candidates if c.get("match_type") in {"same_vendor_and_product", "same_category"}]
         has_strong_overlap = bool(strong)
+        has_expansion = bool(catalog.data.get("expansion_signal"))
         if has_strong_overlap:
             names = ", ".join(f"{c['product_name']} ({c['software_id']})" for c in strong[:3])
-            add_flag(
-                policy.FLAG_EXISTING_OVERLAP,
-                "warning",
-                catalog.result_id,
-                f"approved catalog overlap: {names}. Policy section 3 - surface it and ask whether "
-                "the gap is credible; overlap alone is not a rejection",
-            )
+            if has_expansion:
+                add_flag(
+                    policy.FLAG_EXISTING_EXPANSION,
+                    "info",
+                    catalog.result_id,
+                    f"request is an expansion of an approved product ({names}); "
+                    f"{catalog.data.get('expansion_note')}",
+                )
+            else:
+                add_flag(
+                    policy.FLAG_EXISTING_OVERLAP,
+                    "warning",
+                    catalog.result_id,
+                    f"approved catalog overlap: {names}. Policy section 3 - surface it and ask "
+                    "whether the gap is credible; overlap alone is not a rejection",
+                )
         for candidate in candidates:
             if candidate.get("no_purchase_record"):
                 notes.append(
@@ -313,7 +326,7 @@ def compute(results: list[ToolResult], request: object | None = None) -> CodeFin
         missing=missing,
         flag_names=flag_names,
         has_strong_overlap=has_strong_overlap,
-        expansion_signal=bool(catalog.data.get("expansion_signal")) if catalog else False,
+        expansion_signal=has_expansion,
         budget_insufficient=budget_insufficient,
         vendor_unavailable=vendor_unavailable,
         security_sensitive=security_sensitive_request,

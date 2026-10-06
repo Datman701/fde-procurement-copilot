@@ -169,7 +169,11 @@ class Decision(BaseModel):
             human_review_required=self.needs_human_review,
             telemetry=RunTelemetry(
                 llm_calls=self.trace.llm_calls,
-                tool_calls=self.trace.tool_calls,
+                # tool_calls comes from the registry (every invocation, including
+                # failures); tool_names is the de-duplicated list of tool kinds.
+                tool_calls=max(
+                    self.trace.tool_calls, len(self.trace.tool_result_ids)
+                ),
                 tool_names=list(self.trace.tool_names),
             ),
         )

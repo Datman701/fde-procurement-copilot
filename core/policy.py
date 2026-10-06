@@ -237,6 +237,7 @@ def days_since(review_date: date | None, as_of: date | None = None) -> int | Non
 # --------------------------------------------------------------------------- #
 FLAG_BUDGET_INSUFFICIENT = "budget_insufficient"
 FLAG_EXISTING_OVERLAP = "existing_tool_overlap"
+FLAG_EXISTING_EXPANSION = "existing_tool_expansion"
 FLAG_SECURITY_REQUIRED = "security_review_required"
 FLAG_VENDOR_REVIEW_EXPIRED = "vendor_review_expired"
 FLAG_CONFLICTING_VENDOR = "conflicting_vendor_evidence"
@@ -296,6 +297,7 @@ __all__ = [
     "FLAG_APPROVER_UNRESOLVED",
     "FLAG_BUDGET_INSUFFICIENT",
     "FLAG_CONFLICTING_VENDOR",
+    "FLAG_EXISTING_EXPANSION",
     "FLAG_EXISTING_OVERLAP",
     "FLAG_LEGAL_REQUIRED",
     "FLAG_MISSING_INFORMATION",
