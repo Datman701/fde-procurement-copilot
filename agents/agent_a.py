@@ -80,8 +80,6 @@ class AgentA:
             trace.llm_calls = self.client.llm_calls
             return guardrail.fallback(request, self.registry.all(), trace, str(exc))
 
-        validated["extra_flags"] = (outcome.draft or {}).get("extra_flags") or []
-        validated["extra_approvers"] = (outcome.draft or {}).get("extra_approvers") or []
         return guardrail.apply(validated, self.registry.all(), request, trace)
 
     # -- tool loop --------------------------------------------------------- #

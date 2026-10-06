@@ -108,12 +108,23 @@ def validate_draft(raw: Any) -> dict[str, Any]:
     if not next_step:
         raise GuardrailRejected("next_step is empty")
 
+    extra_flags = raw.get("extra_flags", [])
+    if not isinstance(extra_flags, list):
+        extra_flags = [extra_flags]
+    extra_approvers = raw.get("extra_approvers", [])
+    if not isinstance(extra_approvers, list):
+        extra_approvers = [extra_approvers]
+
     return {
         "recommendation": recommendation,
         "severity": severity,
         "evidence": evidence,
         "missing_information": missing_information,
         "next_step": next_step,
+        # Tightening-only proposals survive validation so the merge stage can
+        # consider them. They are only ever added to, never used to loosen.
+        "extra_flags": [str(f).strip() for f in extra_flags if str(f).strip()],
+        "extra_approvers": [str(a).strip() for a in extra_approvers if str(a).strip()],
     }
 
 
@@ -279,6 +290,8 @@ def apply(
             flags.append(RiskFlag(flag=flag, severity="warning"))
             known.add(flag)
             notes.append(f"kept model-proposed risk flag {flag!r} (tightening is allowed)")
+        elif flag:
+            notes.append(f"model re-raised risk flag {flag!r} that code already computed")
 
     # -- missing information: union
     missing = list(code.missing_information)
