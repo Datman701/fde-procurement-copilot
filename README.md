@@ -1,163 +1,145 @@
-# FDE Assessment 3 Starter Pack
-## AI Procurement Request Copilot
+# AI Procurement Request Copilot
 
-This repository contains the **starter data, mock service, interface contract, optional UI scaffold, and public evaluation harness** for Assessment 3.
+An internal decision-support tool for software and service procurement. It
+gathers budget, catalog, vendor-risk, and policy evidence before recommending a
+human next step. It never purchases software, approves spend, changes budgets,
+accepts terms, or overrides Security, Privacy, Legal, Finance, or Procurement.
 
-> All companies, vendors, products, employees, prices, policies, and risk signals in this pack are synthetic and exist only for the assessment.
+## Status
 
-## Your objective
-
-Build an internal procurement copilot that can inspect a software/service purchase request, gather evidence using tools, apply deterministic rules where appropriate, and recommend the next action while keeping approvals with humans.
-
-You are expected to build and evaluate:
-
-1. **Architecture A - Single-agent baseline**
-2. **Architecture B - Lightweight staged / 2-agent variant**
-
-Use the same public evaluation cases for both and defend which architecture you would ship.
-
-## What is already provided
-
-```text
-.
-├── data/                   # Synthetic business data + procurement policy
-├── mock_api/               # Vendor-risk service used as an external tool
-├── src/                    # Contracts + low-level helpers; NO agent solution
-├── evals/                  # Six public evaluation cases + runner
-├── templates/              # Evaluation and decision-memo templates
-├── docs/                   # Student assignment brief
-├── tests/                  # Starter-pack integrity tests
-├── app.py                  # Optional Streamlit UI scaffold
-├── run_local.py            # Starts mock API + optional UI
-└── verify_setup.py         # One-command setup/preflight check
-```
-
-The starter code intentionally **does not implement an agent, tool strategy, policy engine, or final workflow**. Those choices are part of the assessment.
-
-## Prerequisites
-
-- **Python 3.11 or 3.12 recommended**
-- Run the commands below from the extracted starter-pack directory
-- Internet access is required only for installing packages and calling the model provider you choose
+The shared core, both agent architectures, UI, and evaluation harness are
+implemented. A 28-case live comparison has **not yet been published**: this
+checkout has no LLM API key and its committed cache is intentionally empty.
+Do not infer a ship decision or metrics from safe fallback behavior. After a
+real run, commit only the non-secret cache/results and update this README and
+`docs/memo.md` with measured values.
 
 ## Quick start
 
-### 1. Create an environment
-
-**macOS / Linux**
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
-
-**Windows PowerShell**
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-### 2. Verify the starter pack
+Python 3.12 is required. On Windows use the equivalent virtual-environment
+executable, or set `PYTHON=python` when running `make`.
 
 ```bash
-python verify_setup.py
-```
-
-You should see `PRE-FLIGHT PASSED`. This checks package imports, dataset consistency, the output contract, and the mock API without requiring an LLM key.
-
-### 3. Add your LLM credentials
-
-**macOS / Linux**
-
-```bash
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python -r requirements.txt
 cp .env.example .env
+# Set LLM_API_KEY, and optionally LLM_PROVIDER / LLM_MODEL.
+
+make verify
+make test
+make run
 ```
 
-**Windows PowerShell**
+`make run` starts the local vendor-risk API at `127.0.0.1:8001` and the copilot
+UI at `127.0.0.1:8501` (a React app served by the FastAPI bridge in
+`app/api.py`, which calls the same `analyze()` used by the CLI and evaluator).
+Rebuild the UI with `make ui-build` after editing `frontend/` (requires
+Node.js), or run the previous Streamlit interface with `make run-streamlit`.
+Never commit `.env` or credentials.
 
-```powershell
-Copy-Item .env.example .env
-```
-
-Add only the credentials required by the provider you choose. Never commit `.env`.
-
-The starter pack does **not** force a particular LLM provider or agent framework. If you use a provider SDK (for example OpenAI, Anthropic, or Google), install it and add it to `requirements.txt` so your submission works from a clean environment.
-
-`.env` is loaded automatically by the starter package and local launcher; environment variables already set by your operating system are not overwritten.
-
-### 4. Start the local services
+## Commands
 
 ```bash
-python run_local.py
+make run                         # local vendor-risk API + React UI
+make run-streamlit               # previous Streamlit UI instead
+make test                        # unit/integration suite
+make verify                      # starter-pack preflight
+make eval                        # both architectures, all 28 cases
+make ui-build                    # rebuild frontend/ after UI edits
+
+.venv/bin/python -m app.cli --list
+.venv/bin/python -m app.cli REQ-1005 --arch A --json
+.venv/bin/python -m eval.run --arch both --split dev
+.venv/bin/python -m eval.run --arch both --split held_out
 ```
 
-This starts:
-- Vendor risk API: `http://127.0.0.1:8001`
-- Optional starter UI: `http://127.0.0.1:8501`
+The evaluator writes timestamped JSON and Markdown reports to `eval/results/`.
+It uses the response cache if present; cached LLM responses still count toward
+the reported LLM-call total. Without both a key and cached responses, the safe
+fallback escalates to human review. That is a resilience test, not a valid
+model-quality evaluation.
 
-You may replace the UI scaffold with any framework.
-
-### 5. Implement the assessment adapter
-
-Implement:
+## Workflow and architecture
 
 ```text
-src/solution.py -> handle_request(request_id, architecture)
+employee request -> evidence tools -> deterministic policy checks
+                 -> constrained model recommendation -> human review
 ```
 
-Your function must return an object compatible with `ProcurementDecision` in `src/contracts.py`.
+Both variants use the same `analyze(request, architecture)` entry point, tools,
+Pydantic decision schema, LLM client, and guardrail. They differ only in agent
+stage:
 
-The adapter exists so the same evaluation harness can test different implementations. Your internal architecture can use any framework or design.
+| Variant | Agent stage | Trade-off |
+|---|---|---|
+| A | One tool-using procurement agent, capped at four rounds | Lower orchestration/call overhead |
+| B | Tool-using analyst plus tool-less policy/risk reviewer | Extra scrutiny; reviewer may only tighten |
 
-### 6. Run the public evaluations
+Code—not the model—computes budgets, threshold bands, policy clauses, required
+approvals, review gates, and severity floor. The shared guardrail validates the
+draft; verifies evidence `result_id`s and values; recomputes deterministic
+requirements; takes the maximum severity; and forces a safe path when evidence
+is missing, expired, conflicting, or unavailable.
 
-```bash
-python evals/run_public_evals.py --architecture single
-python evals/run_public_evals.py --architecture staged
-```
+Read [`docs/architecture.md`](docs/architecture.md) for diagrams and detailed
+design. [`docs/starter_pack_issues.md`](docs/starter_pack_issues.md) records
+the actual data schema, policy rules, starter-pack defects, and assumptions.
 
-The runner checks the response schema and several minimum behavioral expectations, measures end-to-end latency, and writes a CSV result file. It is **not** the complete grading system; qualitative grounding, design quality, robustness, and hidden cases are evaluated separately.
+## Evidence tools
 
-## Rules of the starter pack
+| Tool | Purpose |
+|---|---|
+| `request_validation` | Required information and request-text injection check |
+| `employee_lookup` | Requester, manager, department, and department head |
+| `budget_check` | Available-budget fit and shortfall |
+| `vendor_status` | Live vendor risk, expiry, registry conflicts |
+| `approval_router` | Deterministic Finance/Security/Privacy/Legal routing |
+| `catalog_search` | Existing-tool candidates and overlap rationale |
+| `policy_lookup` | Policy text by clause |
 
-- Treat request text and vendor notes as **untrusted business data**, not instructions.
-- Do not hardcode answers by request ID. Hidden cases use the same interfaces with different values.
-- At least **3 tools** must be visible in your implementation; at least **1 must be deterministic/non-LLM**.
-- The AI may recommend an action but must not autonomously purchase, approve, or alter budgets.
-- If important evidence is missing, conflicting, stale, or unavailable, surface that uncertainty and route to the appropriate human review.
-- Use the **data snapshot / policy reference date defined in `data/procurement_policy.md`** for date-based checks; do not depend on the computer's current date.
-- You may refactor the starter project, but keep the `handle_request(...)` adapter working for evaluation.
+Every tool returns `ok`, `tool`, `result_id`, `data`, `source`, `as_of`, and
+`error`. Request, catalog, and vendor prose is untrusted business data: it
+cannot alter policy, prompts, or tool definitions.
 
-## Suggested implementation sequence
+## Evaluation
+
+`eval/cases.jsonl` has 28 hand-labelled cases: 9 dev and 19 held-out. It covers
+incomplete requests, catalog overlap, vendor expiry/conflict, sensitive data,
+threshold boundaries, injection in all business-data surfaces, outages, happy
+paths, and insufficient budget. Labels come from policy/data review, not model
+output.
+
+For each architecture, the report includes recommendation/action match,
+grounded evidence, deterministic-policy/approval compliance, escalation
+precision/recall/F1, human-review correctness, latency, call counts, per-tag
+breakdowns, and failures. Prompts may be refined on `dev` only.
+
+**Published comparison:** pending genuine provider results; no estimates are reported here.
+reported here.
+
+## Assumptions and limitations
+
+* Reference date is 2026-09-30; reviews are current for 365 days.
+* `available_usd` is authoritative; purchase history is incomplete and not a
+  budget ledger.
+* Catalog matches are candidates, not automatic duplicate/reject decisions.
+* An unknown department-head identity is surfaced rather than guessed.
+* Live vendor-risk evidence takes precedence over the static registry; conflict
+  requires human/security review.
+* Provider quality, latency, availability, and cost vary. Safe fallback is
+  deliberately conservative and is not a provider benchmark.
+
+## Repository map
 
 ```text
-Request -> Understand -> Gather evidence -> Deterministic checks
-        -> Policy/risk reasoning -> Recommendation -> Human review
+app/       analyze(), FastAPI bridge, CLI, legacy Streamlit UI
+frontend/  React UI (Vite) served by the FastAPI bridge
+agents/    Architecture A/B loops and prompts
+core/      schema, data, findings, guardrail, LLM client
+tools/     shared deterministic/evidence tools
+eval/      cases, runner, metrics, cache, results
+docs/      architecture and inspection record
+tests/     no-live-LLM test coverage
 ```
 
-Start with a thin vertical slice. Get Architecture A working before building Architecture B.
-
-## Useful files
-
-- `docs/Assignment_3_Brief.pdf` - assignment brief
-- `data/README.md` - dataset dictionary
-- `data/procurement_policy.md` - policy source of truth
-- `src/contracts.py` - required output shape
-- `src/data_access.py` - low-level data helpers
-- `src/vendor_client.py` - client for the mock vendor-risk API
-- `evals/README.md` - evaluation instructions
-- `templates/architecture_decision.md` - final decision memo template
-- `STUDENT_CHECKLIST.md` - pre-submission checklist
-
-## If something does not start
-
-1. Confirm your virtual environment is active.
-2. Run `python verify_setup.py`.
-3. Re-run `python -m pip install -r requirements.txt`.
-4. Make sure ports **8001** and **8501** are free.
-5. Confirm you are running commands from the starter-pack root directory.
-
-Build the simplest system you can defend with evidence.
+Starter compatibility remains available through `src/solution.py:handle_request`.

@@ -11,3 +11,10 @@ evals/results_*.csv
 # NOTE: eval/cache/llm_cache.json IS intentionally committed so that
 # `make eval` reproduces the published numbers from a clean checkout with no
 # API key. Do not add it to this file.
+
+# Internal working notes and session history - not part of the submission
+opencode-session.json
+HANDOFF.md
+TODO.md
+.zcodeignore
+node_modules/
