@@ -63,21 +63,23 @@ def main() -> None:
         print("Vendor-risk API is ready.")
 
         try:
-            __import__("streamlit")
+            __import__("fastapi")
+            __import__("uvicorn")
         except ImportError:
-            print("Streamlit is not installed. Run: pip install -r requirements.txt")
+            print("FastAPI/uvicorn are not installed. Run: pip install -r requirements.txt")
             print("The mock API is still running. Press Ctrl+C to stop.")
         else:
-            print("Starting starter UI on http://127.0.0.1:8501 ...")
+            print("Starting procurement copilot UI on http://127.0.0.1:8501 ...")
             procs.append(
                 start(
                     [
                         sys.executable,
                         "-m",
-                        "streamlit",
-                        "run",
-                        "app.py",
-                        "--server.port",
+                        "uvicorn",
+                        "app.api:app",
+                        "--host",
+                        "127.0.0.1",
+                        "--port",
                         "8501",
                     ]
                 )

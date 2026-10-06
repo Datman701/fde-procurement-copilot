@@ -8,11 +8,12 @@ agent stage - tool layer, guardrail, output schema, LLM client - is identical fo
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from typing import Any, Literal
 
 from core.data import DataOverlay, DataStore, PurchaseRequest
 from core.llm_client import DiskCache, LLMClient, LLMConfig
-from core.schema import Decision
+from core.schema import Decision, ToolResult
 from tools.registry import build_registry
 
 Architecture = Literal["A", "B"]
@@ -82,6 +83,7 @@ def analyze(
     store: DataStore | None = None,
     requester: str | None = None,
     vendor_transport: str | None = None,
+    tool_result_sink: Callable[[list[ToolResult]], None] | None = None,
 ) -> Decision:
     """Analyse one purchase request and return a validated Decision.
 
@@ -99,6 +101,10 @@ def analyze(
     client:
         Inject an :class:`LLMClient` (used by tests). One is built from the
         environment otherwise.
+    tool_result_sink:
+        Optional observer for the actual envelopes produced during this run.
+        It does not alter the Decision contract and is intended for local UI
+        evidence display.
     """
     arch = normalise_architecture(architecture)
     data_store = store if store is not None else DataStore.load(overlay)
@@ -129,6 +135,8 @@ def analyze(
     if not decision.trace.llm_calls:
         decision.trace.llm_calls = llm.llm_calls
     decision.trace.llm_cached_calls = llm.cached_calls
+    if tool_result_sink is not None:
+        tool_result_sink(list(registry.all()))
     return decision
 
 
