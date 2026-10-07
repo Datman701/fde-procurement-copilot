@@ -114,7 +114,7 @@ grounded evidence, deterministic-policy/approval compliance, escalation
 precision/recall/F1, human-review correctness, latency, call counts, per-tag
 breakdowns, and failures. Prompts may be refined on `dev` only.
 
-**Published comparison:** pending genuine provider results; no estimates are reported here.
+**Published comparison** (28 cases, both architectures, model gemini/gemini-3.5-flash-lite, results file `eval/results/20261007T092249Z.json`): Architecture A matched the hand labels on 92.9% of recommendation/next-action pairs vs B 92.9%; deterministic-policy compliance 85.7% vs 85.7%; grounded evidence 100.0% vs 100.0%; escalation precision/recall 94.4% / 100.0% vs 94.4% / 100.0%; median latency 14,693 ms vs 25,624 ms; mean LLM calls per case 3.82 vs 5.29. See `docs/memo.md` for the ship decision and its reasoning.
 reported here.
 
 ## Assumptions and limitations

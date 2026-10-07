@@ -5,28 +5,28 @@
 **The evidence.** Both architectures were run over the same 28 hand-labelled
 procurement cases (9 dev for tuning, 19 held out, run once per architecture)
 with identical tools, decision schema, guardrail and LLM client; only the agent
-stage differs. Model: `{{MODEL}}` at temperature 0; cached responses still count
+stage differs. Model: `gemini/gemini-3.5-flash-lite` at temperature 0; cached responses still count
 as calls, so the numbers mean the same thing with or without a warm cache.
 
 | Metric (all 28 cases) | A | B |
 |---|---|---|
-| Recommendation / next action match | {{A_REC}} | {{B_REC}} |
-| Policy + deterministic rules followed | {{A_POL}} | {{B_POL}} |
-| Evidence grounded in tool results | {{A_GRD}} | {{B_GRD}} |
-| Escalation precision / recall | {{A_ESC}} | {{B_ESC}} |
-| Latency p50 | {{A_P50}} | {{B_P50}} |
-| Mean LLM calls per case | {{A_CALLS}} | {{B_CALLS}} |
+| Recommendation / next action match | 92.9% | 92.9% |
+| Policy + deterministic rules followed | 85.7% | 85.7% |
+| Evidence grounded in tool results | 100.0% | 100.0% |
+| Escalation precision / recall | 94.4% / 100.0% | 94.4% / 100.0% |
+| Latency p50 | 14,693 ms | 25,624 ms |
+| Mean LLM calls per case | 3.82 | 5.29 |
 
 Full per-tag breakdowns and failure lists are in
-`eval/results/{{RESULTS_FILE}}`.
+`eval/results/20261007T092249Z.json`.
 
 **Why A.** A matches or beats B on label agreement and deterministic-policy
-compliance while using roughly half the LLM calls and latency. The simpler
-system performs as well or better, so the second agent is unnecessary
-orchestration.
+compliance while using 28% fewer LLM calls per case and 43% less median
+latency. The simpler system performs as well or better, so the second agent is
+unnecessary orchestration.
 
 **What B buys.** The tighten-only reviewer raised severity or added flags in
-{{B_TIGHTENED}} of 28 cases and never loosened one (code enforces max-severity
+28 of 28 cases and never loosened one (code enforces max-severity
 and unions, so the prompt is not trusted for safety). That extra scrutiny did
 not convert into measurably better decisions against the hand labels, because
 the shared deterministic layer — not the model — already owns thresholds,
