@@ -18,3 +18,6 @@ HANDOFF.md
 TODO.md
 .zcodeignore
 node_modules/
+
+# Course material - kept on disk locally, not part of the submission repo
+FDE_*.pdf
