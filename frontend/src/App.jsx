@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchCatalog, fetchRequestDetails, runAnalysis } from "./api.js";
 import {
   VerdictBanner,
+  ExtractionPanel,
   ApprovalCard,
   FlagItem,
   EvidenceCard,
@@ -78,6 +79,7 @@ export default function App() {
 
   const decision = result?.decision;
   const toolResults = result?.tool_results ?? [];
+  const extractions = result?.extractions ?? [];
 
   return (
     <div className="app">
@@ -270,6 +272,8 @@ export default function App() {
           {decision && (
             <>
               <VerdictBanner severity={decision.severity} />
+
+              <ExtractionPanel extractions={extractions} />
 
               <section className="panel">
                 <h2>Recommended next step</h2>

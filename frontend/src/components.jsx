@@ -35,6 +35,48 @@ export function VerdictBanner({ severity }) {
   );
 }
 
+const EXTRACTION_LABELS = {
+  annual_cost_usd: "Annual cost",
+  user_count: "Users / seats",
+  vendor_name: "Vendor",
+  product_name: "Product",
+  category: "Category",
+  data_access_level: "Data access",
+  requester_id: "Requester",
+  urgency: "Urgency",
+};
+
+function formatValue(field, value) {
+  if (field === "annual_cost_usd") {
+    return `$${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  }
+  return String(value);
+}
+
+export function ExtractionPanel({ extractions }) {
+  if (!extractions || extractions.length === 0) return null;
+  return (
+    <section className="panel extractions">
+      <h2>What we read from your request</h2>
+      <p className="muted small">
+        Recovered deterministically from your wording. Anything not stated is left
+        blank and listed under missing information — nothing is guessed.
+      </p>
+      <ul className="plain-list extraction-list">
+        {extractions.map((item, i) => (
+          <li key={i}>
+            <span className="extraction-label">
+              {EXTRACTION_LABELS[item.field] ?? item.field}
+            </span>
+            <strong className="extraction-value">{formatValue(item.field, item.value)}</strong>
+            <span className="muted small">“{item.evidence}”</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function ApprovalCard({ approval }) {
   return (
     <div className="approval-card">

@@ -736,6 +736,65 @@
    }
   ]
  },
+ "05326ebba56b26ee7d3a30b4127a509d01590478545bf336354f0eefea3115d8": {
+  "latency_ms": 1425.2,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    },
+    {
+     "arguments": {},
+     "name": "employee_lookup"
+    },
+    {
+     "arguments": {},
+     "name": "budget_check"
+    },
+    {
+     "arguments": {},
+     "name": "vendor_status"
+    },
+    {
+     "arguments": {
+      "product_name": "Figma Pro",
+      "use_case_text": "design team"
+     },
+     "name": "catalog_search"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
+   },
+   {
+    "arguments": {},
+    "name": "employee_lookup"
+   },
+   {
+    "arguments": {},
+    "name": "budget_check"
+   },
+   {
+    "arguments": {},
+    "name": "vendor_status"
+   },
+   {
+    "arguments": {
+     "product_name": "Figma Pro",
+     "use_case_text": "design team"
+    },
+    "name": "catalog_search"
+   }
+  ]
+ },
  "0540ed778db4715faa161e8dd66cbb14b3c5dbfe9ac9ed2823e0d4560a5b1066": {
   "latency_ms": 6373.1,
   "model": "gemini-3.5-flash-lite",
@@ -1863,6 +1922,35 @@
    }
   ]
  },
+ "0b4570f9e22aa77ea6f629862d2ad53a5ae4e4d36ae13f4b81242fffb3b55153": {
+  "latency_ms": 6424.4,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "budget_check"
+    },
+    {
+     "arguments": {},
+     "name": "vendor_status"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "budget_check"
+   },
+   {
+    "arguments": {},
+    "name": "vendor_status"
+   }
+  ]
+ },
  "0be8243cebba91b762e6e43201286a975a81e26d60b6fd71a8511d0e964a224f": {
   "latency_ms": 1513.7,
   "model": "gemini-3.5-flash-lite",
@@ -2340,6 +2428,31 @@
    }
   ]
  },
+ "104ffdf3530bbb262c5803f312619580f028aa98e3fac5f0289bf99fdd1976ff": {
+  "latency_ms": 4859.4,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "request_id": "FREE-TEXT"
+     },
+     "name": "employee_lookup"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "request_id": "FREE-TEXT"
+    },
+    "name": "employee_lookup"
+   }
+  ]
+ },
  "106da2250c5148ce4d82520679ea0081b840ea08e51c9eedefb11d7f320c0d78": {
   "latency_ms": 1146.2,
   "model": "gemini-3.5-flash-lite",
@@ -2762,6 +2875,40 @@
    "tool_calls": []
   },
   "text": "{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"NEEDS_APPROVAL\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request is complete with no missing fields.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"true\"\n    },\n    {\n      \"claim\": \"Request fits within department available budget.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"within_budget\"\n    },\n    {\n      \"claim\": \"Vendor status is approved and review is current.\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"Approved\"\n    },\n    {\n      \"claim\": \"Required approvers include Department Head, Finance, and Procurement.\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"[\\\"Department Head\\\", \\\"Finance\\\", \\\"Procurement\\\"]\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Route the request to Department Head, Finance, and Procurement for approval.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
+ },
+ "13fc5b3e2f8e88d99813194958b27655b045c179162b7963a0c935e9ab760a3d": {
+  "latency_ms": 6681.2,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Request validation failed because required field requester_id is missing.",
+     "quote_or_value": "missing_fields",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Employee lookup failed due to unknown requester_id in request FREE-TEXT.",
+     "quote_or_value": "FAILED: request FREE-TEXT references unknown requester_id",
+     "result_id": "t02-employee_lookup"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "P1-REQUIRED-INFO"
+   ],
+   "missing_information": [
+    "requester_id"
+   ],
+   "next_step": "Request the missing requester_id from the submitter before proceeding with procurement validation and approvals.",
+   "recommendation": "request_more_info",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation failed because required field requester_id is missing.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"missing_fields\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id in request FREE-TEXT.\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id\"\n  ],\n  \"next_step\": \"Request the missing requester_id from the submitter before proceeding with procurement validation and approvals.\",\n  \"extra_flags\": [\n    \"P1-REQUIRED-INFO\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation failed because required field requester_id is missing.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"missing_fields\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id in request FREE-TEXT.\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id\"\n  ],\n  \"next_step\": \"Request the missing requester_id from the submitter before proceeding with procurement validation and approvals.\",\n  \"extra_flags\": [\n    \"P1-REQUIRED-INFO\"\n  ],\n  \"extra_approvers\": []\n}",
   "tool_calls": []
  },
  "14068e585287bbfdb29e6aedc03b4f97e6c1d202bd6adda126a43fb270b2a1db": {
@@ -5231,6 +5378,69 @@
      "category": "Project Management",
      "product_name": "TaskFlow Pro",
      "vendor_name": "TaskFlow"
+    },
+    "name": "catalog_search"
+   }
+  ]
+ },
+ "25bee4ec45425952c413e88fbda27547d69d454b7cbbca5522969576fb7d36ac": {
+  "latency_ms": 6476.1,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "request_id": "FREE-TEXT"
+     },
+     "name": "employee_lookup"
+    },
+    {
+     "arguments": {},
+     "name": "budget_check"
+    },
+    {
+     "arguments": {
+      "vendor_name": "SignFlow"
+     },
+     "name": "vendor_status"
+    },
+    {
+     "arguments": {
+      "category": "E-signature",
+      "product_name": "SignFlow",
+      "use_case_text": "Need SignFlow Add-on, 3 seats at $800 per year. Internal documents only.",
+      "vendor_name": "SignFlow"
+     },
+     "name": "catalog_search"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "request_id": "FREE-TEXT"
+    },
+    "name": "employee_lookup"
+   },
+   {
+    "arguments": {},
+    "name": "budget_check"
+   },
+   {
+    "arguments": {
+     "vendor_name": "SignFlow"
+    },
+    "name": "vendor_status"
+   },
+   {
+    "arguments": {
+     "category": "E-signature",
+     "product_name": "SignFlow",
+     "use_case_text": "Need SignFlow Add-on, 3 seats at $800 per year. Internal documents only.",
+     "vendor_name": "SignFlow"
     },
     "name": "catalog_search"
    }
@@ -12162,6 +12372,27 @@
    }
   ]
  },
+ "5b297410e23e16044b38f09e55f91122e8229d858c79062bef58017551f3a765": {
+  "latency_ms": 4800.3,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
+   }
+  ]
+ },
  "5b4b9c6d4517a8df55753199db18e9a58c73513e79b0c41ea914afbd55efdd06": {
   "latency_ms": 8365.3,
   "model": "gemini-3.5-flash-lite",
@@ -12773,6 +13004,27 @@
     "arguments": {
      "request_id": "REQ-1003"
     },
+    "name": "request_validation"
+   }
+  ]
+ },
+ "610040232c7faaab5d854df7b1f10cd8b506a188fd83cc5a02fc2843d11cea10": {
+  "latency_ms": 5698.0,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
     "name": "request_validation"
    }
   ]
@@ -14026,6 +14278,41 @@
   },
   "text": "```json\n{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"NEEDS_APPROVAL\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request is complete and has no missing information\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"true\"\n    },\n    {\n      \"claim\": \"Request fits within the department available budget\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"within available budget\"\n    },\n    {\n      \"claim\": \"Vendor security and legal terms status are approved and current\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"Approved\"\n    },\n    {\n      \"claim\": \"Catalog search identifies DocSpace as an existing approved product with an expansion signal\",\n      \"result_id\": \"t05-catalog_search\",\n      \"quote_or_value\": \"DocSpace (SW004) from DocSpace is already the approved product for this request's vendor and category (Knowledge Management, Approved, 200 seats, scope Company-wide). request text states an expansion/renewal reason: 'additional engineering' - treat as an expansion, not a duplicate.\"\n    },\n    {\n      \"claim\": \"Required approvals include Department Head and Procurement\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"[\\\"Department Head\\\", \\\"Procurement\\\"]\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Route the request to Maya Rao (Department Head) and Procurement for review and approval.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}\n```",
   "tool_calls": []
+ },
+ "6d13860f72357782edf14061c432652ebc1284bb35904bb9f46622bf40982e85": {
+  "latency_ms": 5980.9,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "budget_result_id": "t03-budget_check",
+      "category": "Design & Creative",
+      "data_access_level": "customer_pii",
+      "requested_integrations": [],
+      "vendor_name": "PixelCraft",
+      "vendor_result_id": "t04-vendor_status"
+     },
+     "name": "approval_router"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "budget_result_id": "t03-budget_check",
+     "category": "Design & Creative",
+     "data_access_level": "customer_pii",
+     "requested_integrations": [],
+     "vendor_name": "PixelCraft",
+     "vendor_result_id": "t04-vendor_status"
+    },
+    "name": "approval_router"
+   }
+  ]
  },
  "6dbabbc548f5f161c97e668fce5fdb8e862358be3ef1da654653f8bb9b5d7cf6": {
   "latency_ms": 6478.8,
@@ -15355,6 +15642,54 @@
     "name": "request_validation"
    }
   ]
+ },
+ "7af11b4e4928eb51455cef8791857af4e0c7a791806690c3514e6ab763def6be": {
+  "latency_ms": 6342.0,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Request validation failed because required fields are missing and prompt injection was detected.",
+     "quote_or_value": "false",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Employee lookup failed due to unknown requester_id in the request.",
+     "quote_or_value": "FAILED: request FREE-TEXT references unknown requester_id",
+     "result_id": "t02-employee_lookup"
+    },
+    {
+     "claim": "Budget check failed because there is no budget row for department None.",
+     "quote_or_value": "FAILED: no budget row for department None; cannot evaluate this request",
+     "result_id": "t03-budget_check"
+    },
+    {
+     "claim": "Vendor status check failed because no vendor name was supplied.",
+     "quote_or_value": "no vendor name was supplied or stated in the request",
+     "result_id": "t04-vendor_status"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "PROMPT_INJECTION_DETECTED"
+   ],
+   "missing_information": [
+    "requester_id",
+    "vendor_name",
+    "annual_cost_usd",
+    "user_count",
+    "data_access_level"
+   ],
+   "next_step": "A human must request missing information from the submitter and address the prompt-injection attempt noted in policy section 1.",
+   "recommendation": "request_more_info",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation failed because required fields are missing and prompt injection was detected.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id in the request.\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    },\n    {\n      \"claim\": \"Budget check failed because there is no budget row for department None.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"FAILED: no budget row for department None; cannot evaluate this request\"\n    },\n    {\n      \"claim\": \"Vendor status check failed because no vendor name was supplied.\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"no vendor name was supplied or stated in the request\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id\",\n    \"vendor_name\",\n    \"annual_cost_usd\",\n    \"user_count\",\n    \"data_access_level\"\n  ],\n  \"next_step\": \"A human must request missing information from the submitter and address the prompt-injection attempt noted in policy section 1.\",\n  \"extra_flags\": [\n    \"PROMPT_INJECTION_DETECTED\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation failed because required fields are missing and prompt injection was detected.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id in the request.\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    },\n    {\n      \"claim\": \"Budget check failed because there is no budget row for department None.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"FAILED: no budget row for department None; cannot evaluate this request\"\n    },\n    {\n      \"claim\": \"Vendor status check failed because no vendor name was supplied.\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"no vendor name was supplied or stated in the request\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id\",\n    \"vendor_name\",\n    \"annual_cost_usd\",\n    \"user_count\",\n    \"data_access_level\"\n  ],\n  \"next_step\": \"A human must request missing information from the submitter and address the prompt-injection attempt noted in policy section 1.\",\n  \"extra_flags\": [\n    \"PROMPT_INJECTION_DETECTED\"\n  ],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
  },
  "7b0a970a076b75d5e50637595399def2f18788de5c719e1f4025a5228ba1e101": {
   "latency_ms": 6774.7,
@@ -17602,6 +17937,41 @@
      "category": "E-signature",
      "data_access_level": "internal_documents",
      "department": "Finance",
+     "requested_integrations": [],
+     "vendor_name": "SignFlow",
+     "vendor_result_id": "t04-vendor_status"
+    },
+    "name": "approval_router"
+   }
+  ]
+ },
+ "8bce27a9b3363f29349c0eea66e5935a37dfb4f311e9e1b36d096464bf477454": {
+  "latency_ms": 5843.5,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "budget_result_id": "t03-budget_check",
+      "category": "E-signature",
+      "data_access_level": "internal_documents",
+      "requested_integrations": [],
+      "vendor_name": "SignFlow",
+      "vendor_result_id": "t04-vendor_status"
+     },
+     "name": "approval_router"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "budget_result_id": "t03-budget_check",
+     "category": "E-signature",
+     "data_access_level": "internal_documents",
      "requested_integrations": [],
      "vendor_name": "SignFlow",
      "vendor_result_id": "t04-vendor_status"
@@ -22190,6 +22560,31 @@
    }
   ]
  },
+ "b21f329a4bae29812f55e1a66eab74563fa207f075540fcf28c47728421daf68": {
+  "latency_ms": 6292.8,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "request_id": "t01-request_validation"
+     },
+     "name": "employee_lookup"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "request_id": "t01-request_validation"
+    },
+    "name": "employee_lookup"
+   }
+  ]
+ },
  "b2ba9d005f6d7bcae64b4a3190de02f87050ded524eb38be1a52313eaf0b35f5": {
   "latency_ms": 6774.8,
   "model": "gemini-3.5-flash-lite",
@@ -24437,6 +24832,27 @@
    }
   ]
  },
+ "cad1c13253599bd4180d0b32cb53c8f2b2e8f3dcf1d6f0429de5a550a9a64025": {
+  "latency_ms": 7367.5,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
+   }
+  ]
+ },
  "cb1084ab58926011a4ee9cfd8c2958c6b581fbd1a5310070ddf2b5dc16754b20": {
   "latency_ms": 6038.9,
   "model": "gemini-3.5-flash-lite",
@@ -24584,6 +25000,36 @@
     "name": "catalog_search"
    }
   ]
+ },
+ "cb74fd14b01fea8d4eac40c14a40fef80377c69469da870c7effab165067a51b": {
+  "latency_ms": 5207.4,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Budget is insufficient by $17,000.00",
+     "quote_or_value": "over_budget",
+     "result_id": "t03-budget_check"
+    },
+    {
+     "claim": "Required approvals include Department Head, Finance, CFO, Procurement, Security, and Privacy",
+     "quote_or_value": "[\"Department Head\", \"Finance\", \"CFO\", \"Procurement\", \"Security\", \"Privacy\"]",
+     "result_id": "t05-approval_router"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [],
+   "missing_information": [],
+   "next_step": "Escalate for budget exception review and security/privacy reviews due to over-budget status and customer PII access.",
+   "recommendation": "escalate_security_review",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "```json\n{\n  \"recommendation\": \"escalate_security_review\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Budget is insufficient by $17,000.00\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"over_budget\"\n    },\n    {\n      \"claim\": \"Required approvals include Department Head, Finance, CFO, Procurement, Security, and Privacy\",\n      \"result_id\": \"t05-approval_router\",\n      \"quote_or_value\": \"[\\\"Department Head\\\", \\\"Finance\\\", \\\"CFO\\\", \\\"Procurement\\\", \\\"Security\\\", \\\"Privacy\\\"]\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Escalate for budget exception review and security/privacy reviews due to over-budget status and customer PII access.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}\n```",
+   "tool_calls": []
+  },
+  "text": "```json\n{\n  \"recommendation\": \"escalate_security_review\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Budget is insufficient by $17,000.00\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"over_budget\"\n    },\n    {\n      \"claim\": \"Required approvals include Department Head, Finance, CFO, Procurement, Security, and Privacy\",\n      \"result_id\": \"t05-approval_router\",\n      \"quote_or_value\": \"[\\\"Department Head\\\", \\\"Finance\\\", \\\"CFO\\\", \\\"Procurement\\\", \\\"Security\\\", \\\"Privacy\\\"]\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Escalate for budget exception review and security/privacy reviews due to over-budget status and customer PII access.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}\n```",
+  "tool_calls": []
  },
  "cbae35ad2fc36278d2d12bc93ae2897193be2415ea2beeadc8c51584f6d499ab": {
   "latency_ms": 834.7,
@@ -24969,6 +25415,27 @@
      "vendor_result_id": "t04-vendor_status"
     },
     "name": "approval_router"
+   }
+  ]
+ },
+ "ce1ab7d5486885260526db94353175206c678e188edaded119d13d8ba702aea1": {
+  "latency_ms": 6597.5,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
    }
   ]
  },
@@ -27125,6 +27592,46 @@
    }
   ]
  },
+ "daee79314a99cbf81ec83e50fd3d937a125bf8a21649b10a9790cf0cde80b7e0": {
+  "latency_ms": 5311.6,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Request is complete with no missing fields",
+     "quote_or_value": "true",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Budget check fits within available department budget",
+     "quote_or_value": "within_budget",
+     "result_id": "t03-budget_check"
+    },
+    {
+     "claim": "Vendor security status is current and approved",
+     "quote_or_value": "current",
+     "result_id": "t04-vendor_status"
+    },
+    {
+     "claim": "Required approvals only include line manager",
+     "quote_or_value": "Manager",
+     "result_id": "t06-approval_router"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [],
+   "missing_information": [],
+   "next_step": "Submit the request to line manager Noah Williams for approval.",
+   "recommendation": "proceed_with_approvals",
+   "severity": "PROCEED"
+  },
+  "raw": {
+   "text": "```json\n{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"PROCEED\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request is complete with no missing fields\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"true\"\n    },\n    {\n      \"claim\": \"Budget check fits within available department budget\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"within_budget\"\n    },\n    {\n      \"claim\": \"Vendor security status is current and approved\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"current\"\n    },\n    {\n      \"claim\": \"Required approvals only include line manager\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"Manager\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Submit the request to line manager Noah Williams for approval.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}\n```",
+   "tool_calls": []
+  },
+  "text": "```json\n{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"PROCEED\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request is complete with no missing fields\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"true\"\n    },\n    {\n      \"claim\": \"Budget check fits within available department budget\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"within_budget\"\n    },\n    {\n      \"claim\": \"Vendor security status is current and approved\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"current\"\n    },\n    {\n      \"claim\": \"Required approvals only include line manager\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"Manager\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Submit the request to line manager Noah Williams for approval.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}\n```",
+  "tool_calls": []
+ },
  "db45e0819df04340614bfbbaccf78a97057927fea937fe920c5cd2171a17415d": {
   "latency_ms": 6764.7,
   "model": "gemini-3.5-flash-lite",
@@ -28704,6 +29211,44 @@
    }
   ]
  },
+ "e7c15d6d2720cb94d842820e7971095a361f536b95fbd4610ffb7192094046f3": {
+  "latency_ms": 5470.5,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Request is incomplete and missing required fields under policy P1-REQUIRED-INFO",
+     "quote_or_value": "false",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Missing fields include requester_id, vendor_name, annual_cost_usd, user_count, and data_access_level",
+     "quote_or_value": "[\"requester_id\", \"vendor_name\", \"annual_cost_usd\", \"user_count\", \"data_access_level\"]",
+     "result_id": "t01-request_validation"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "MISSING_REQUIRED_INFO"
+   ],
+   "missing_information": [
+    "requester is missing or unstated - policy section 1 requires it before approval",
+    "vendor is missing or unstated - policy section 1 requires it before approval",
+    "annual cost is missing or unstated - policy section 1 requires it before approval",
+    "number of users / licenses is missing or unstated - policy section 1 requires it before approval",
+    "intended data-access level is missing or unstated - policy section 1 requires it before approval"
+   ],
+   "next_step": "Request clarification from the submitter to provide the missing required information (requester, vendor, annual cost, user count, and intended data-access level) before proceeding.",
+   "recommendation": "request_more_info",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request is incomplete and missing required fields under policy P1-REQUIRED-INFO\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id, vendor_name, annual_cost_usd, user_count, and data_access_level\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"[\\\"requester_id\\\", \\\"vendor_name\\\", \\\"annual_cost_usd\\\", \\\"user_count\\\", \\\"data_access_level\\\"]\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester is missing or unstated - policy section 1 requires it before approval\",\n    \"vendor is missing or unstated - policy section 1 requires it before approval\",\n    \"annual cost is missing or unstated - policy section 1 requires it before approval\",\n    \"number of users / licenses is missing or unstated - policy section 1 requires it before approval\",\n    \"intended data-access level is missing or unstated - policy section 1 requires it before approval\"\n  ],\n  \"next_step\": \"Request clarification from the submitter to provide the missing required information (requester, vendor, annual cost, user count, and intended data-access level) before proceeding.\",\n  \"extra_flags\": [\n    \"MISSING_REQUIRED_INFO\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request is incomplete and missing required fields under policy P1-REQUIRED-INFO\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id, vendor_name, annual_cost_usd, user_count, and data_access_level\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"[\\\"requester_id\\\", \\\"vendor_name\\\", \\\"annual_cost_usd\\\", \\\"user_count\\\", \\\"data_access_level\\\"]\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester is missing or unstated - policy section 1 requires it before approval\",\n    \"vendor is missing or unstated - policy section 1 requires it before approval\",\n    \"annual cost is missing or unstated - policy section 1 requires it before approval\",\n    \"number of users / licenses is missing or unstated - policy section 1 requires it before approval\",\n    \"intended data-access level is missing or unstated - policy section 1 requires it before approval\"\n  ],\n  \"next_step\": \"Request clarification from the submitter to provide the missing required information (requester, vendor, annual cost, user count, and intended data-access level) before proceeding.\",\n  \"extra_flags\": [\n    \"MISSING_REQUIRED_INFO\"\n  ],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
+ },
  "e7c518019298cb775fa649c5cbf66d08e694950a14dfb20f7826f4630117bac2": {
   "latency_ms": 6008.0,
   "model": "gemini-3.5-flash-lite",
@@ -29142,6 +29687,31 @@
   },
   "text": "```json\n{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"PROCEED\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request is complete with no missing fields\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"true\"\n    },\n    {\n      \"claim\": \"Budget check fits within available department funds\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"within_budget\"\n    },\n    {\n      \"claim\": \"Vendor security status is current and approved\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"current\"\n    },\n    {\n      \"claim\": \"Catalog search indicates an approved existing product with an expansion rationale\",\n      \"result_id\": \"t05-catalog_search\",\n      \"quote_or_value\": \"SignFlow (SW010) from SignFlow is already the approved product for this request's vendor and category (E-signature, Approved, 45 seats, scope Company-wide). request text states an expansion/renewal reason: 'additional signing' - treat as an expansion, not a duplicate.\"\n    },\n    {\n      \"claim\": \"Approval router requires only line manager approval\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"Manager\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Submit the request to the line manager for approval.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}\n```",
   "tool_calls": []
+ },
+ "ed8afb552599ef6547770b80881d260be79ffdd70dbb6fabaea22886ea2167dc": {
+  "latency_ms": 6537.7,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "clause_id": "P1-REQUIRED-INFO"
+     },
+     "name": "policy_lookup"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "clause_id": "P1-REQUIRED-INFO"
+    },
+    "name": "policy_lookup"
+   }
+  ]
  },
  "ed8e3f1f1797117ab3352df8cd70ed94938b35b8f947c83f4eb44a88e0a219b9": {
   "latency_ms": 5166.8,

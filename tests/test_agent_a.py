@@ -323,7 +323,6 @@ class TestAdapter:
 
         script = Scripted([TOOL_ROUND_1, TOOL_ROUND_2, GOOD_DRAFT])
         client = client_for(script)
-        from app.analyze import _coerce_request
 
         # Route the shared client in by monkeypatching _build_client.
         import app.analyze as analyze_module

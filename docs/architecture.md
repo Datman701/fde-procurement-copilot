@@ -37,6 +37,12 @@ maximum of model and code severity, so a model can tighten but never loosen a
 rule. Missing, expired, conflicting, or unavailable vendor evidence forces the
 appropriate human path.
 
+Prose requests are normalized by `core.free_text` before they reach this layer.
+It is a deterministic extractor, not a model: it recovers money, seat counts,
+urgency and data-access level only where the text states them, and resolves
+product and vendor against the real catalog and vendor list. Vague prose stays
+incomplete and therefore routes to `request_more_info`.
+
 ## Architecture A — single-agent baseline
 
 ```mermaid

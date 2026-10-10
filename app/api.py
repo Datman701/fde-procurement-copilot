@@ -87,6 +87,7 @@ def run_analysis(body: AnalyzeBody) -> dict:
             raise HTTPException(status_code=400, detail=f"Unknown request id.") from exc
 
     tool_results: list = []
+    extractions: list = []
     try:
         decision = analyze(
             target,
@@ -96,6 +97,7 @@ def run_analysis(body: AnalyzeBody) -> dict:
             store=store,
             requester=body.requester_id,
             tool_result_sink=tool_results.extend,
+            extraction_sink=extractions.extend,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"{type(exc).__name__}: {exc}") from exc
@@ -103,6 +105,7 @@ def run_analysis(body: AnalyzeBody) -> dict:
     return {
         "decision": _json_safe(decision.model_dump()),
         "tool_results": [_json_safe(r.model_dump()) for r in tool_results],
+        "extractions": _json_safe(extractions),
     }
 
 

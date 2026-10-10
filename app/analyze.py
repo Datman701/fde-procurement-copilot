@@ -43,32 +43,26 @@ def _coerce_request(
     request: Any,
     store: DataStore,
     requester: str | None = None,
-) -> PurchaseRequest:
-    """Accept a request id, a dict, an existing request, or free text."""
+) -> tuple[PurchaseRequest, list[Any]]:
+    """Accept a request id, a dict, an existing request, or free text.
+
+    Returns the parsed request plus any fields recovered from prose, so the
+    caller can show the user what was read out of their request.
+    """
     if isinstance(request, PurchaseRequest):
-        return request
+        return request, []
     if isinstance(request, str):
         found = store.request(request)
         if found is not None:
-            return found
-        # Not a known id: treat it as free-text from the UI.
-        return PurchaseRequest.from_dict(
-            {
-                "request_id": "FREE-TEXT",
-                "requester_id": requester or "",
-                "product_name": request.strip()[:120],
-                "vendor_name": "",
-                "category": "",
-                "annual_cost_usd": None,
-                "user_count": None,
-                "business_justification": request,
-                "data_access_level": "unknown",
-                "requested_integrations": [],
-                "urgency": "normal",
-            }
-        )
+            return found, []
+        # Not a known id: treat it as free-text from the UI and extract only
+        # what the prose states explicitly.
+        from core.free_text import extract
+
+        fields, trail = extract(request, store=store, requester_id=requester)
+        return PurchaseRequest.from_dict(fields), trail
     if isinstance(request, dict):
-        return PurchaseRequest.from_dict(request)
+        return PurchaseRequest.from_dict(request), []
 
     raise TypeError(f"cannot interpret request of type {type(request).__name__}")
 
@@ -85,6 +79,7 @@ def analyze(
     requester: str | None = None,
     vendor_transport: str | None = None,
     tool_result_sink: Callable[[list[ToolResult]], None] | None = None,
+    extraction_sink: Callable[[list[dict[str, Any]]], None] | None = None,
 ) -> Decision:
     """Analyse one purchase request and return a validated Decision.
 
@@ -112,10 +107,15 @@ def analyze(
         Optional observer for the actual envelopes produced during this run.
         It does not alter the Decision contract and is intended for local UI
         evidence display.
+    extraction_sink:
+        Optional observer for fields recovered from free-text prose. Empty for
+        catalog requests, which are already structured.
     """
     arch = normalise_architecture(architecture)
     data_store = store if store is not None else DataStore.load(overlay)
-    parsed = _coerce_request(request, data_store, requester=requester)
+    parsed, extractions = _coerce_request(request, data_store, requester=requester)
+    if extraction_sink is not None:
+        extraction_sink([item.to_dict() for item in extractions])
 
     registry = build_registry(data_store, parsed, vendor_transport=vendor_transport)
 

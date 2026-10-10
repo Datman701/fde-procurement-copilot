@@ -92,6 +92,24 @@ Read [`docs/architecture.md`](docs/architecture.md) for diagrams and detailed
 design. [`docs/starter_pack_issues.md`](docs/starter_pack_issues.md) records
 the actual data schema, policy rules, starter-pack defects, and assumptions.
 
+## Free-text requests
+
+Requests can also be described in prose instead of picked from the catalog.
+`core/free_text.py` recovers structured fields **deterministically** — no model
+call — and only from what the text states explicitly:
+
+* money (`$32,000`, `9000 USD`, `9000 per year`, `$12k`) and seat counts
+  (`65 seats`, `users: 3`). A seat count is never read as a price.
+* product and vendor, resolved against the real catalog and vendor list, so a
+  request cannot invent a vendor that Security would then be asked to review.
+* data-access level, requester (`Requested by Sarah Lee` → the employee's id)
+  and urgency, each only when named.
+
+Nothing is inferred. Vague prose still yields `request_more_info`, and the UI
+shows a *"What we read from your request"* panel listing every recovered field
+with the exact wording that justified it. The published evaluation uses catalog
+request ids only, so free-text extraction does not affect any reported number.
+
 ## Evidence tools
 
 | Tool | Purpose |
