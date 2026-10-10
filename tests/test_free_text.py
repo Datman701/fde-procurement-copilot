@@ -81,6 +81,17 @@ class TestCatalogResolution:
         )
         assert len(fields["product_name"]) <= 80
 
+    def test_product_evidence_cites_the_matched_term_not_the_opening_clause(self):
+        # "Quick one — the contracts team needs SignFlow again" used to be
+        # cited as "Quick on", which justifies nothing.
+        _, trail = extract(
+            "Quick one — the contracts team needs SignFlow again for Q4, "
+            "$780 for the year, 5 seats.",
+            store=store(),
+        )
+        evidence = [e.evidence for e in trail if e.field == "product_name"]
+        assert evidence == ["SignFlow"]
+
     def test_a_free_text_request_cannot_invent_a_vendor(self):
         fields, _ = extract("For VendorNotInRegistry Inc, $100", store=store())
         assert fields["vendor_name"] == ""
@@ -123,6 +134,40 @@ class TestRequesterAndUrgency:
     def test_urgency_defaults_to_normal(self):
         fields, _ = extract("Need the tool, $100", store=store())
         assert fields["urgency"] == "normal"
+
+    def test_negated_urgency_is_not_urgent(self):
+        # A real request that said "Not urgent, would just be good to have
+        # before the January renewals" was being filed as urgent.
+        fields, trail = extract(
+            "Need SignFlow, $780 for the year, 5 seats. "
+            "Not urgent, would just be good to have before the January renewals.",
+            store=store(),
+        )
+        assert fields["urgency"] == "normal"
+
+    def test_negated_urgency_is_recorded_so_the_writer_can_see_it_was_read(self):
+        _, trail = extract(
+            "Need SignFlow, $780. Not urgent, next quarter is fine.",
+            store=store(),
+        )
+        evidence = [e.evidence for e in trail if e.field == "urgency"]
+        assert evidence == ["Not urgent"]
+
+    def test_other_negations_of_urgency(self):
+        for prose in (
+            "Need SignFlow, $780. No rush, whenever.",
+            "Need SignFlow, $780. Not ASAP, just whenever.",
+            "Need SignFlow, $780. Nothing urgent about this.",
+        ):
+            fields, _ = extract(prose, store=store())
+            assert fields["urgency"] == "normal", prose
+
+    def test_a_negation_earlier_in_the_sentence_does_not_mask_a_later_urgency(self):
+        fields, _ = extract(
+            "Need SignFlow, $780. Not next month, I need it ASAP.",
+            store=store(),
+        )
+        assert fields["urgency"] == "urgent"
 
 
 class TestCoercion:

@@ -140,6 +140,13 @@ _URGENCY_WORDS = (
     ("urgent", re.compile(r"\b(?:urgent|asap|immediately|right\s+away|today)\b", re.IGNORECASE)),
     ("high", re.compile(r"\bhigh\s+priority\b", re.IGNORECASE)),
 )
+# "not urgent", "no rush today" must not read as urgent. Same treatment as the
+# negation masking applied to the data-access scan.
+_NEGATED_URGENCY_RE = re.compile(
+    r"\b(?:not|no|isn'?t|aren'?t|never|nothing|without)\b[^.!?\n]{0,20}?"
+    r"(?:urgent(?:ly)?|asap|immediately|right\s+away|today)\b",
+    re.IGNORECASE,
+)
 
 
 def _snippet(text: str, limit: int = 80) -> str:
@@ -183,6 +190,7 @@ def extract(
 
     # ---- product and vendor, resolved against real catalog/vendor names ----
     product_name = _snippet(prose)
+    product_evidence = product_name
     category = ""
     vendor_name = ""
     lowered = prose.lower()
@@ -195,6 +203,9 @@ def extract(
     if catalog_hits:
         best = max(catalog_hits, key=lambda item: len(item.product_name))
         product_name = best.product_name
+        # Cite the catalog term that was actually found in the prose, not the
+        # opening clause ("Quick one — ..."), which justifies nothing.
+        product_evidence = best.product_name
         category = getattr(best, "category", "") or ""
         vendor_name = getattr(best, "vendor_name", "") or ""
 
@@ -208,7 +219,7 @@ def extract(
         vendor_name = best_vendor.vendor_name
 
     if product_name:
-        record("product_name", product_name, prose[: len(product_name)])
+        record("product_name", product_name, product_evidence)
     if vendor_name:
         record("vendor_name", vendor_name, vendor_name)
     if category:
@@ -230,11 +241,16 @@ def extract(
         record("requester_id", requester, "requester selected in the form")
 
     # ---- urgency -------------------------------------------------------------
+    negated_u = _NEGATED_URGENCY_RE.search(prose)
+    searchable = _NEGATED_URGENCY_RE.sub("", prose)
     for urgency, pattern in _URGENCY_WORDS:
-        found_u = pattern.search(prose)
+        found_u = pattern.search(searchable)
         if found_u:
             record("urgency", urgency, found_u.group(0).strip())
             break
+    else:
+        if negated_u:
+            record("urgency", "normal", negated_u.group(0).strip())
 
     fields: dict[str, Any] = {
         "request_id": "FREE-TEXT",
