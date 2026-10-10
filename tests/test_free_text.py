@@ -109,6 +109,39 @@ class TestDataAccessLevel:
         )
         assert fields["data_access_level"] != "customer_pii"
 
+    def test_nothing_that_touches_customer_data_is_not_customer_pii(self):
+        # A real request said "nothing that touches customer data" and was
+        # filed as customer_pii, because \bno\b does not match inside
+        # "nothing". That false positive triggered a security and privacy
+        # escalation on a request that had explicitly ruled them out.
+        fields, _ = extract(
+            "DocSpace for legal, $24,000 for 200 seats. All the files are our "
+            "own contracts — internal documents only, nothing that touches "
+            "customer data.",
+            store=store(),
+        )
+        assert fields["data_access_level"] == "internal_documents"
+
+    def test_other_negation_forms_are_masked(self):
+        for prose in (
+            "This isn't customer data.",
+            "This is not customer data.",
+            "None of this is customer data.",
+            "It won't hold customer data.",
+            "No customer data at all.",
+        ):
+            fields, _ = extract(prose, store=store())
+            assert fields["data_access_level"] != "customer_pii", prose
+
+    def test_a_negation_does_not_mask_a_later_separate_mention(self):
+        # "no" earlier in the sentence must not silence a genuine later use.
+        fields, _ = extract(
+            "There is no budget line for this yet. It will hold customer data "
+            "from the billing system.",
+            store=store(),
+        )
+        assert fields["data_access_level"] == "customer_pii"
+
     def test_source_code(self):
         fields, _ = extract("Needs read access to our source code", store=store())
         assert fields["data_access_level"] == "source_code"

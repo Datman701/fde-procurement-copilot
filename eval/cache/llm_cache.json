@@ -65,6 +65,31 @@
    }
   ]
  },
+ "00e872e94bdcc57161960615199b2c834701fd339f30d2834685eebf4be82218": {
+  "latency_ms": 5139.8,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "request_id": "FREE-TEXT"
+     },
+     "name": "employee_lookup"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "request_id": "FREE-TEXT"
+    },
+    "name": "employee_lookup"
+   }
+  ]
+ },
  "00ee856b5296edb790ad41a5f8b9a4778df27c268a9fd1a79455a3a4b688a0bd": {
   "latency_ms": 6836.7,
   "model": "gemini-3.5-flash-lite",
@@ -5018,6 +5043,37 @@
    }
   ]
  },
+ "21eee3315429287b82707cd8de50a2fef7124646a277a5dfc6bf76ba212a09a4": {
+  "latency_ms": 6341.2,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "category": "Knowledge Management",
+      "product_name": "DocSpace",
+      "use_case_text": "contract management and legal document repository",
+      "vendor_name": "DocSpace"
+     },
+     "name": "catalog_search"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "category": "Knowledge Management",
+     "product_name": "DocSpace",
+     "use_case_text": "contract management and legal document repository",
+     "vendor_name": "DocSpace"
+    },
+    "name": "catalog_search"
+   }
+  ]
+ },
  "21f51cd1f4b089b723197499c30297f30eba57aeab7172877f880331d5ad9a53": {
   "latency_ms": 5373.5,
   "model": "gemini-3.5-flash-lite",
@@ -9935,6 +9991,43 @@
     "name": "approval_router"
    }
   ]
+ },
+ "49b90ebdec506a4c476ee1750e1c0f97b3c39c650098cc4b6845d512843cb016": {
+  "latency_ms": 6143.0,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Budget check shows the request is over budget with a shortfall of $6,000.0.",
+     "quote_or_value": "over_budget",
+     "result_id": "t03-budget_check"
+    },
+    {
+     "claim": "Vendor security review is approved and current.",
+     "quote_or_value": "Approved",
+     "result_id": "t04-vendor_status"
+    },
+    {
+     "claim": "Catalog search found DocSpace already approved company-wide.",
+     "quote_or_value": "Company-wide",
+     "result_id": "t05-catalog_search"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "over_budget"
+   ],
+   "missing_information": [],
+   "next_step": "A human must review the budget shortfall of $6,000.0 and the department budget utilisation of 133.3%, as well as the existing company-wide approval for DocSpace.",
+   "recommendation": "escalate_security_review",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"escalate_security_review\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Budget check shows the request is over budget with a shortfall of $6,000.0.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"over_budget\"\n    },\n    {\n      \"claim\": \"Vendor security review is approved and current.\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"Approved\"\n    },\n    {\n      \"claim\": \"Catalog search found DocSpace already approved company-wide.\",\n      \"result_id\": \"t05-catalog_search\",\n      \"quote_or_value\": \"Company-wide\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"A human must review the budget shortfall of $6,000.0 and the department budget utilisation of 133.3%, as well as the existing company-wide approval for DocSpace.\",\n  \"extra_flags\": [\n    \"over_budget\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"escalate_security_review\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Budget check shows the request is over budget with a shortfall of $6,000.0.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"over_budget\"\n    },\n    {\n      \"claim\": \"Vendor security review is approved and current.\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"Approved\"\n    },\n    {\n      \"claim\": \"Catalog search found DocSpace already approved company-wide.\",\n      \"result_id\": \"t05-catalog_search\",\n      \"quote_or_value\": \"Company-wide\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"A human must review the budget shortfall of $6,000.0 and the department budget utilisation of 133.3%, as well as the existing company-wide approval for DocSpace.\",\n  \"extra_flags\": [\n    \"over_budget\"\n  ],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
  },
  "49c60f035ed8b6a7564ca1b300ac49ff9bbf238ff42b627298b3a55afde8bff8": {
   "latency_ms": 6167.3,
@@ -21360,6 +21453,27 @@
    }
   ]
  },
+ "a4f244e4cafb97c19a827a34ac1505a907a1c26a27dc86063786f59e18c5c34d": {
+  "latency_ms": 6151.7,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "budget_check"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "budget_check"
+   }
+  ]
+ },
  "a5f7cb6cfd4c7a6aa3231f8eb3a8342310d64142c6f68a14cd4a2299c9632430": {
   "latency_ms": 6742.1,
   "model": "gemini-3.5-flash-lite",
@@ -29453,6 +29567,31 @@
    }
   ]
  },
+ "e5475ff94f81aae7158dcf9418335ef632e819f8332401a822d26e77d9c35d54": {
+  "latency_ms": 5831.8,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "vendor_name": "DocSpace"
+     },
+     "name": "vendor_status"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "vendor_name": "DocSpace"
+    },
+    "name": "vendor_status"
+   }
+  ]
+ },
  "e58bb42785fa69d8176b246131d95e310086d67f4a1b8985fae44117d5fe2a59": {
   "latency_ms": 5975.0,
   "model": "gemini-3.5-flash-lite",
@@ -32479,6 +32618,27 @@
      "vendor_name": "SignFlow"
     },
     "name": "catalog_search"
+   }
+  ]
+ },
+ "ff63fa06c32e783f2fa830572e4eef80e9af5e559e5b4d254d4ffaa929d83067": {
+  "latency_ms": 1706.5,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
    }
   ]
  },

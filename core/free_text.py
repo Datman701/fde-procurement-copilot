@@ -103,7 +103,11 @@ def _count(text: str) -> tuple[int | None, str | None]:
 # Phrases such as "no customer data" or "never touches customer data" are
 # masked before scanning, so the negation wins over the keyword it contains.
 _NEGATED_RE = re.compile(
-    r"\b(?:no|not|never|without|zero|n/?a|doesn'?t|does\s+not)\b"
+    # "nothing that touches customer data" must not become customer_pii.
+    # Note \bno\b does not match inside "nothing", so each form is listed.
+    r"\b(?:no|nothing|none|not|never|without|zero|n/?a"
+    r"|doesn'?t|does\s+not|isn'?t|is\s+not|aren'?t|are\s+not"
+    r"|won'?t|will\s+not)\b"
     r"[^.;\n]{0,48}?"
     r"\b(?:pii|personal\s+data|customer\s+data|sensitive\s+data|confidential)\b",
     re.IGNORECASE,
