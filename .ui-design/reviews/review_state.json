@@ -1,0 +1,34 @@
+{
+  "review_id": "frontend_ui_20261011_000000",
+  "target": "frontend/src/",
+  "focus_areas": ["visual", "usability", "code", "performance"],
+  "context": "Data entry + result display (procurement request copilot)",
+  "platform": "desktop only",
+  "status": "fixes_applied",
+  "started_at": "2026-10-11T00:00:00Z",
+  "completed_at": "2026-10-11T00:00:00Z",
+  "fixes_applied_at": "2026-10-11T00:50:00Z",
+  "report": ".ui-design/reviews/frontend_ui_20261011_000000.md",
+  "issues_found": 18,
+  "issues_fixed": 12,
+  "severity_counts": {
+    "critical": 0,
+    "major": 6,
+    "minor": 6,
+    "suggestion": 6
+  },
+  "fixed": [
+    "1-stale-request-preview-race",
+    "2-no-focus-styles",
+    "3-zero-aria",
+    "4-contrast-failures",
+    "5-no-timeout-or-cancel",
+    "6-unexplained-disabled-buttons",
+    "7-no-type-or-spacing-scale",
+    "8-no-prefers-reduced-motion",
+    "9-emoji-as-sole-severity-marker",
+    "10-jargon-leak",
+    "11-app-jsx-three-responsibilities",
+    "12-catalog-load-unrecoverable"
+  ]
+}

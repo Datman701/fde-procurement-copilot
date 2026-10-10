@@ -1,6 +1,6 @@
 // Thin fetch wrappers around the FastAPI bridge in app/api.py.
 
-async function request(url, options) {
+async function request(url, options = {}) {
   const response = await fetch(url, options);
   if (!response.ok) {
     let detail = `${response.status} ${response.statusText}`;
@@ -15,18 +15,19 @@ async function request(url, options) {
   return response.json();
 }
 
-export function fetchCatalog() {
-  return request("/api/requests");
+export function fetchCatalog(signal) {
+  return request("/api/requests", { signal });
 }
 
-export function fetchRequestDetails(requestId) {
-  return request(`/api/requests/${encodeURIComponent(requestId)}`);
+export function fetchRequestDetails(requestId, signal) {
+  return request(`/api/requests/${encodeURIComponent(requestId)}`, { signal });
 }
 
-export function runAnalysis(body) {
+export function runAnalysis(body, signal) {
   return request("/api/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    signal,
   });
 }

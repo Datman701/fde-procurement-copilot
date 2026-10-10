@@ -26,7 +26,9 @@ export function VerdictBanner({ severity }) {
   const s = SEVERITY_STYLES[severity] ?? SEVERITY_STYLES.NEEDS_APPROVAL;
   return (
     <div className={`verdict ${s.cls}`}>
-      <span className="verdict-icon">{s.icon}</span>
+      <span className="verdict-icon" aria-hidden="true">
+        {s.icon}
+      </span>
       <div>
         <strong>{s.label}</strong>
         <p>{s.text}</p>
@@ -90,13 +92,17 @@ export function ApprovalCard({ approval }) {
 }
 
 const FLAG_ICONS = { high: "🔴", warning: "🟠", info: "🔵" };
+const FLAG_LABELS = { high: "High severity", warning: "Warning", info: "Information" };
 
 export function FlagItem({ flag }) {
   return (
     <li className="flag">
-      <span>{FLAG_ICONS[flag.severity] ?? "⚪"}</span>
+      <span aria-hidden="true">{FLAG_ICONS[flag.severity] ?? "⚪"}</span>
       <div>
         <code>{flag.flag}</code>
+        {/* Colour alone must not carry severity — emoji shape helps, but a
+            text label is what a screen reader and a monochrome print get. */}
+        <span className="muted small"> · {FLAG_LABELS[flag.severity] ?? "Unclassified"}</span>
         {flag.detail && <p>{flag.detail}</p>}
         {flag.source_result_id && (
           <p className="muted small">source: {flag.source_result_id}</p>
@@ -168,7 +174,7 @@ export function RunStats({ trace, decision }) {
         </div>
         <div className="stat">
           <span className="stat-value">{trace.llm_calls}</span>
-          <span className="stat-label">LLM calls</span>
+          <span className="stat-label">AI calls</span>
         </div>
         <div className="stat">
           <span className="stat-value">{trace.tool_result_ids?.length ?? 0}</span>
