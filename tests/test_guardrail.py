@@ -278,6 +278,66 @@ class TestTightenOnly:
 # --------------------------------------------------------------------------- #
 # 4. Escalation floor
 # --------------------------------------------------------------------------- #
+class TestFlagVocabulary:
+    """A decision must not carry two names for the same risk."""
+
+    def test_uppercase_model_flag_is_normalised(self, store):
+        registry = gather(store, store.request("REQ-1001"))
+        decision = guardrail.apply(
+            draft(extra_flags=["PROMPT_INJECTION_DETECTED"]),
+            registry.all(),
+            store.request("REQ-1001"),
+            trace(),
+        )
+        flags = decision.flag_names()
+        assert "prompt_injection_detected" in flags
+        assert "PROMPT_INJECTION_DETECTED" not in flags
+
+    def test_alias_folds_into_the_canonical_flag(self, store):
+        registry = gather(store, store.request("REQ-1007"))  # expired vendor
+        decision = guardrail.apply(
+            draft(extra_flags=["over_budget", "SECURITY_REVIEW_EXPIRED"]),
+            registry.all(),
+            store.request("REQ-1007"),
+            trace(),
+        )
+        flags = decision.flag_names()
+        assert "budget_insufficient" in flags
+        assert "over_budget" not in flags
+        assert "SECURITY_REVIEW_EXPIRED" not in flags
+
+    def test_no_flag_is_ever_reported_twice(self, store):
+        registry = gather(store, store.request("REQ-1007"))
+        decision = guardrail.apply(
+            draft(extra_flags=["prompt_injection", "Prompt_Injection_Detected"]),
+            registry.all(),
+            store.request("REQ-1007"),
+            trace(),
+        )
+        flags = decision.flag_names()
+        assert len(flags) == len(set(flags)), flags
+
+    def test_a_genuinely_new_flag_is_kept_not_dropped(self, store):
+        """Discarding model signal would loosen, not tighten."""
+        registry = gather(store, store.request("REQ-1001"))
+        decision = guardrail.apply(
+            draft(extra_flags=["unusual_vendor_terms"]),
+            registry.all(),
+            store.request("REQ-1001"),
+            trace(),
+        )
+        assert "unusual_vendor_terms" in decision.flag_names()
+
+    def test_renormalisation_is_recorded_in_the_trace(self, store):
+        registry = gather(store, store.request("REQ-1001"))
+        t = trace()
+        guardrail.apply(
+            draft(extra_flags=["OVER_BUDGET"]), registry.all(), store.request("REQ-1001"), t
+        )
+        assert any("OVER_BUDGET" in n and "budget_insufficient" in n
+                   for n in t.guardrail_notes)
+
+
 class TestEscalationFloor:
     def test_tool_failure_forces_at_least_needs_approval(self, store):
         """A vendor_status failure must never leave the decision at PROCEED."""

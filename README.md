@@ -8,11 +8,15 @@ accepts terms, or overrides Security, Privacy, Legal, Finance, or Procurement.
 ## Status
 
 The shared core, both agent architectures, UI, and evaluation harness are
-implemented. A 28-case live comparison has **not yet been published**: this
-checkout has no LLM API key and its committed cache is intentionally empty.
-Do not infer a ship decision or metrics from safe fallback behavior. After a
-real run, commit only the non-secret cache/results and update this README and
-`docs/memo.md` with measured values.
+implemented and passing (286 tests). A 28-case live comparison of both
+architectures has been published; see **Evaluation** below for the measured
+numbers, the results file, and the ship decision in `docs/memo.md`.
+
+Results reproduce without an API key: every LLM response used by the published
+run is committed in `eval/cache/llm_cache.json`, and `make eval` replays it.
+Do not infer metrics from safe fallback behaviour — that path only triggers on
+a cache miss with no key, and it is a resilience test rather than a quality
+evaluation.
 
 ## Quick start
 
@@ -55,9 +59,12 @@ make ui-build                    # rebuild frontend/ after UI edits
 
 The evaluator writes timestamped JSON and Markdown reports to `eval/results/`.
 It uses the response cache if present; cached LLM responses still count toward
-the reported LLM-call total. Without both a key and cached responses, the safe
-fallback escalates to human review. That is a resilience test, not a valid
-model-quality evaluation.
+the reported LLM-call total, and a cache hit needs no API key — so `make eval`
+reproduces the published numbers from a clean checkout with no `.env` key set.
+Use `--fresh` to re-query the provider while still updating the cache, which is
+what honest latency figures require. Without both a key and cached responses,
+the safe fallback escalates to human review. That is a resilience test, not a
+valid model-quality evaluation.
 
 ## Workflow and architecture
 
@@ -114,8 +121,20 @@ grounded evidence, deterministic-policy/approval compliance, escalation
 precision/recall/F1, human-review correctness, latency, call counts, per-tag
 breakdowns, and failures. Prompts may be refined on `dev` only.
 
-**Published comparison** (28 cases, both architectures, model gemini/gemini-3.5-flash-lite, results file `eval/results/20261007T092249Z.json`): Architecture A matched the hand labels on 92.9% of recommendation/next-action pairs vs B 92.9%; deterministic-policy compliance 85.7% vs 85.7%; grounded evidence 100.0% vs 100.0%; escalation precision/recall 94.4% / 100.0% vs 94.4% / 100.0%; median latency 14,693 ms vs 25,624 ms; mean LLM calls per case 3.82 vs 5.29. See `docs/memo.md` for the ship decision and its reasoning.
-reported here.
+**Published comparison** (28 cases, both architectures, model
+`gemini/gemini-3.5-flash-lite`, results file
+`eval/results/20261010T123631Z.json`, live API run with cache reads bypassed so
+the latency figures are real): Architecture A matched the hand labels on 92.9%
+of recommendation/next-action pairs vs B 89.3%; deterministic-policy compliance
+85.7% vs 85.7%; exact approval match 85.7% vs 85.7%; grounded evidence 100.0%
+vs 100.0%; severity match 96.4% vs 89.3%; escalation precision/recall 94.4% /
+100.0% vs 85.0% / 100.0%; median latency 20,424 ms vs 25,435 ms; mean LLM calls
+per case 4.25 vs 5.25. See `docs/memo.md` for the ship decision and its
+reasoning.
+
+`LLM_MODEL` must stay equal to `gemini-3.5-flash-lite`, the model the committed
+cache was written under; a different model changes the cache key, misses every
+entry, and the comparison above will not reproduce.
 
 ## Assumptions and limitations
 

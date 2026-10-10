@@ -252,6 +252,78 @@ FLAG_MODEL_UNAVAILABLE = "model_unavailable"
 FLAG_TOOL_FAILURE = "tool_failure"
 FLAG_NEW_VENDOR = "new_vendor"
 
+#: Every flag the decision is allowed to carry.
+VOCAB_FLAGS: frozenset[str] = frozenset(
+    {
+        FLAG_BUDGET_INSUFFICIENT,
+        FLAG_EXISTING_OVERLAP,
+        FLAG_EXISTING_EXPANSION,
+        FLAG_SECURITY_REQUIRED,
+        FLAG_VENDOR_REVIEW_EXPIRED,
+        FLAG_CONFLICTING_VENDOR,
+        FLAG_PRIVACY_REQUIRED,
+        FLAG_LEGAL_REQUIRED,
+        FLAG_PROMPT_INJECTION,
+        FLAG_MISSING_INFORMATION,
+        FLAG_VENDOR_UNAVAILABLE,
+        FLAG_VENDOR_UNKNOWN,
+        FLAG_APPROVER_UNRESOLVED,
+        FLAG_MODEL_UNAVAILABLE,
+        FLAG_TOOL_FAILURE,
+        FLAG_NEW_VENDOR,
+    }
+)
+
+#: Spellings the model writes for a vocabulary flag. Folded in so a decision
+#: never carries two names for the same risk (``PROMPT_INJECTION_DETECTED`` next
+#: to ``prompt_injection_detected`` reads as two findings, not one).
+FLAG_ALIASES: dict[str, str] = {
+    "over_budget": FLAG_BUDGET_INSUFFICIENT,
+    "budget_exceeded": FLAG_BUDGET_INSUFFICIENT,
+    "vendor_evidence_unavailable": FLAG_VENDOR_UNAVAILABLE,
+    "vendor_risk_service_failure": FLAG_VENDOR_UNAVAILABLE,
+    "vendor_risk_service_unavailable": FLAG_VENDOR_UNAVAILABLE,
+    "vendor_status_failure": FLAG_VENDOR_UNAVAILABLE,
+    "prompt_injection": FLAG_PROMPT_INJECTION,
+    "injection_detected": FLAG_PROMPT_INJECTION,
+    "prompt_injection_detected_in_vendor_notes": FLAG_PROMPT_INJECTION,
+    "prompt_injection_in_vendor_notes": FLAG_PROMPT_INJECTION,
+    "catalog_overlap": FLAG_EXISTING_OVERLAP,
+    "existing_company_wide_license_overlap": FLAG_EXISTING_OVERLAP,
+    "company_wide_license_overlap": FLAG_EXISTING_OVERLAP,
+    "security_review_expired": FLAG_VENDOR_REVIEW_EXPIRED,
+    "vendor_security_expired": FLAG_VENDOR_REVIEW_EXPIRED,
+    "vendor_review_missing": FLAG_VENDOR_REVIEW_EXPIRED,
+    "vendor_security_expired_or_conflicting": FLAG_CONFLICTING_VENDOR,
+    "vendor_security_conflict": FLAG_CONFLICTING_VENDOR,
+    "vendor_registry_conflict": FLAG_CONFLICTING_VENDOR,
+    "vendor_evidence_conflict": FLAG_CONFLICTING_VENDOR,
+    "vendor_status_conflict": FLAG_CONFLICTING_VENDOR,
+    "vendor_record_missing": FLAG_VENDOR_UNKNOWN,
+    "vendor_not_found": FLAG_VENDOR_UNKNOWN,
+    "vendor_security_pending": FLAG_SECURITY_REQUIRED,
+    "security_review_pending": FLAG_SECURITY_REQUIRED,
+    "security_review_not_completed": FLAG_SECURITY_REQUIRED,
+    "new_vendor_security_pending": FLAG_SECURITY_REQUIRED,
+    "legal_terms_draft": FLAG_LEGAL_REQUIRED,
+    "p1-required-info": FLAG_MISSING_INFORMATION,
+}
+
+
+def canonical_flag(flag: str) -> str:
+    """Fold a flag into the policy vocabulary.
+
+    Case is normalised first, then known aliases, then the vocabulary itself.
+    Anything genuinely new is returned lowercased and kept: the model may be
+    surfacing something the deterministic rules missed, and discarding it would
+    loosen rather than tighten.
+    """
+    key = str(flag).strip().lower()
+    if not key:
+        return ""
+    return FLAG_ALIASES.get(key, key)
+
+
 #: Flags that by themselves force at least NEEDS_APPROVAL (brief section 3.3.4).
 ESCALATING_FLAGS: frozenset[str] = frozenset(
     {
@@ -294,6 +366,9 @@ __all__ = [
     "DATA_ACCESS_PRIVACY",
     "DATA_ACCESS_SECURITY",
     "ESCALATING_FLAGS",
+    "FLAG_ALIASES",
+    "VOCAB_FLAGS",
+    "canonical_flag",
     "FLAG_APPROVER_UNRESOLVED",
     "FLAG_BUDGET_INSUFFICIENT",
     "FLAG_CONFLICTING_VENDOR",

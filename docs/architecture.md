@@ -77,10 +77,15 @@ to pass through the same shared guardrail.
 
 `core.llm_client` owns provider configuration, call/tool counts, latency,
 per-run call budget, requests-per-minute throttle, jittered exponential retry
-for 429/5xx responses, and disk caching. It uses an OpenAI-compatible adapter
-so changing providers is configuration rather than an architectural rewrite.
-The cache key includes provider, model, messages, tool definitions, and schema.
-Cache hits remain counted as calls for honest trace reporting.
+for 429/5xx responses, and disk caching. Provider selection is a registry
+entry: Gemini uses Google's official `google-genai` SDK, and the OpenAI-compatible
+adapter serves OpenAI, OpenRouter, Groq, Together and Ollama, so changing
+providers is configuration rather than an architectural rewrite. The cache key
+includes provider, model, base URL, messages, tool definitions, schema and
+temperature. Cache hits remain counted as calls for honest trace reporting, and
+a cache hit needs no API key, so a clean checkout reproduces the published
+numbers offline. Provider construction is lazy, so nothing validates a key
+until a real call is due.
 
 If the provider is unavailable or structured output cannot be repaired, the
 system produces a safe human-review fallback. It does not invent data or

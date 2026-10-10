@@ -285,16 +285,44 @@ def apply(
         existing.add(approver)
 
     # -- risk flags: union, never a subset
-    flags = list(code.risk_flags)
-    known = {f.flag for f in flags}
+    # Code flags are folded into the vocabulary first so the same risk cannot
+    # appear twice under two spellings.
+    flags: list[RiskFlag] = []
+    known: set[str] = set()
+    for computed in code.risk_flags:
+        name = policy.canonical_flag(computed.flag)
+        if name and name not in known:
+            flags.append(
+                RiskFlag(
+                    flag=name,
+                    severity=computed.severity,
+                    source_result_id=computed.source_result_id,
+                    detail=computed.detail,
+                )
+            )
+            known.add(name)
+
     for extra in draft.get("extra_flags", []) or []:
-        flag = extra if isinstance(extra, str) else str(extra.get("flag", ""))
-        flag = flag.strip()
-        if flag and flag not in known:
+        raw = extra if isinstance(extra, str) else str(extra.get("flag", ""))
+        raw = str(raw).strip()
+        if not raw:
+            continue
+        flag = policy.canonical_flag(raw)
+        if not flag:
+            continue
+        if flag not in known:
             flags.append(RiskFlag(flag=flag, severity="warning"))
             known.add(flag)
-            notes.append(f"kept model-proposed risk flag {flag!r} (tightening is allowed)")
-        elif flag:
+            if flag != raw:
+                notes.append(
+                    f"normalised model risk flag {raw!r} to {flag!r} (policy vocabulary)"
+                )
+                trace.guardrail_notes.append(f"flag {raw!r} -> {flag!r}")
+            else:
+                notes.append(f"kept model-proposed risk flag {flag!r} (tightening is allowed)")
+        elif flag != raw:
+            notes.append(f"model raised {raw!r}, already recorded as {flag!r}")
+        else:
             notes.append(f"model re-raised risk flag {flag!r} that code already computed")
 
     # -- missing information: union
