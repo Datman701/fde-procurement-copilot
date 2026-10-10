@@ -322,7 +322,9 @@ class LLMClient:
             self.config.requests_per_minute, self.config.max_calls_per_run
         )
         self.transport = transport or self._default_transport()
-        self.provider_impl = self._load_provider()
+        # Built lazily: a warm cache must be able to answer without a provider
+        # ever being constructed, so a run with no API key still reproduces.
+        self._provider_impl: Any = None
 
         # Per-run counters (reset by ``new_run``).
         self.llm_calls = 0
@@ -368,6 +370,24 @@ class LLMClient:
         module = importlib.import_module(spec["module"])
         return getattr(module, spec["function"])(self.config)
 
+    @property
+    def provider_impl(self) -> Any:
+        """The transport adapter, constructed on first real use.
+
+        Construction is deferred so that a cache hit never touches the provider.
+        Some SDKs (google-genai) raise on an empty API key the moment their
+        client is built, which would otherwise make a fully-cached run fail in a
+        clean checkout that has no ``.env``.
+        """
+        if self._provider_impl is None:
+            self._provider_impl = self._load_provider()
+        return self._provider_impl
+
+    @provider_impl.setter
+    def provider_impl(self, value: Any) -> None:
+        # Tests inject a fake transport here.
+        self._provider_impl = value
+
     # -- main entry point -------------------------------------------------- #
     def chat(
         self,
@@ -378,11 +398,6 @@ class LLMClient:
         temperature: float | None = None,
     ) -> LLMResponse:
         """One chat completion. Counts, times, caches and retries."""
-        if not self.configured:
-            self.unavailable = True
-            self.unavailable_reason = "LLM_API_KEY / LLM_MODEL not configured"
-            raise LLMError(self.unavailable_reason)
-
         payload = {
             "messages": messages,
             "tools": tools,
@@ -421,6 +436,13 @@ class LLMClient:
                 cached=True,
                 raw=entry.get("raw", {}),
             )
+
+        # Only a cache miss needs credentials. A fully-cached run must work in a
+        # clean checkout with no .env so published numbers reproduce offline.
+        if not self.configured:
+            self.unavailable = True
+            self.unavailable_reason = "LLM_API_KEY / LLM_MODEL not configured"
+            raise LLMError(self.unavailable_reason)
 
         started = time.perf_counter()
         last_error: Exception | None = None

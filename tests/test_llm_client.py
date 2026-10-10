@@ -298,6 +298,38 @@ class TestDiskCache:
         finally:
             os.environ.pop("LLM_CACHE_PATH", None)
 
+    def test_a_warm_cache_answers_without_an_api_key(self, tmp_path):
+        """Clean checkout, no .env: every response served from the committed cache.
+
+        Some SDKs raise the moment their client is built if the key is empty, so
+        provider construction must stay behind the cache lookup.
+        """
+        path = str(tmp_path / "nokey.json")
+        prompt = [{"role": "user", "content": "reproducible"}]
+        os.environ["LLM_CACHE_PATH"] = path
+        try:
+            warm = LLMClient(make_config(), transport="fake")
+            warm.provider_impl = FakeProvider([LLMResponse(text='{"ok":true}')])
+            warm.chat(prompt)
+
+            keyless = LLMConfig(
+                provider="gemini",
+                model="gemini-2.5-flash",
+                api_key="",  # deliberately absent
+                base_url="https://example.invalid/v1",
+                requests_per_minute=100_000,
+            )
+            client = LLMClient(keyless, transport="fake")
+            assert client._provider_impl is None  # never constructed yet
+
+            response = client.chat(prompt)
+            assert response.text == '{"ok":true}'
+            assert response.cached is True
+            assert client.cached_calls == 1
+            assert client._provider_impl is None  # still never constructed
+        finally:
+            os.environ.pop("LLM_CACHE_PATH", None)
+
     def test_fresh_run_rerequests_and_updates_the_committed_cache(self, tmp_path):
         """use_cache=False + cache_writes=True: live calls that refresh the cache."""
         path = str(tmp_path / "fresh.json")
