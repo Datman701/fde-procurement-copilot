@@ -181,9 +181,21 @@ class DiskCache:
     returned verbatim.
     """
 
-    def __init__(self, path: str | None = None, enabled: bool = True) -> None:
+    def __init__(
+        self,
+        path: str | None = None,
+        enabled: bool = True,
+        *,
+        bypass_read: bool = False,
+        read_only: bool = False,
+    ) -> None:
         self.path = path or os.getenv("LLM_CACHE_PATH", DEFAULT_CACHE_PATH)
         self.enabled = enabled
+        #: Skip lookups but still write: re-run against the live API while
+        #: keeping the committed cache up to date.
+        self.bypass_read = bypass_read
+        #: Load and serve the cache but never modify it (CI / read-only runs).
+        self.read_only = read_only
         self._lock = threading.Lock()
         self._data: dict[str, Any] = {}
         self.hits = 0
@@ -207,6 +219,10 @@ class DiskCache:
     def get(self, key: str) -> dict[str, Any] | None:
         if not self.enabled:
             return None
+        if self.bypass_read:
+            with self._lock:
+                self.misses += 1  # deliberately re-fetched from the provider
+            return None
         with self._lock:
             entry = self._data.get(key)
             if entry is None:
@@ -216,7 +232,7 @@ class DiskCache:
             return entry
 
     def set(self, key: str, entry: dict[str, Any]) -> None:
-        if not self.enabled:
+        if not self.enabled or self.read_only:
             return
         with self._lock:
             self._data[key] = entry
@@ -224,7 +240,7 @@ class DiskCache:
         self.flush()
 
     def flush(self) -> None:
-        if not self.enabled:
+        if not self.enabled or self.read_only:
             return
         directory = os.path.dirname(self.path)
         if directory:
@@ -289,10 +305,19 @@ class LLMClient:
         *,
         cache: DiskCache | None = None,
         use_cache: bool = True,
+        cache_writes: bool | None = None,
         transport: str | None = None,
     ) -> None:
         self.config = config or LLMConfig.from_env()
-        self.cache = cache if cache is not None else DiskCache(enabled=use_cache)
+        if cache is not None:
+            self.cache = cache
+        else:
+            writes = use_cache if cache_writes is None else cache_writes
+            self.cache = DiskCache(
+                enabled=use_cache or writes,
+                bypass_read=not use_cache,
+                read_only=not writes,
+            )
         self.throttle = Throttle(
             self.config.requests_per_minute, self.config.max_calls_per_run
         )

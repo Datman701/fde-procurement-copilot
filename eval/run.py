@@ -142,7 +142,12 @@ class VendorService:
 # --------------------------------------------------------------------------- #
 # Run
 # --------------------------------------------------------------------------- #
-def run_case(case: dict[str, Any], architecture: str, use_cache: bool) -> dict[str, Any]:
+def run_case(
+    case: dict[str, Any],
+    architecture: str,
+    use_cache: bool,
+    cache_writes: bool | None = None,
+) -> dict[str, Any]:
     """Run one case through ``analyze`` and score it."""
     from app.analyze import analyze
     from core.data import DataStore
@@ -160,6 +165,7 @@ def run_case(case: dict[str, Any], architecture: str, use_cache: bool) -> dict[s
         architecture=architecture,
         overlay=overlay,
         use_cache=use_cache,
+        cache_writes=cache_writes,
         store=store,
         tool_result_sink=observed.extend,
     )
@@ -209,6 +215,7 @@ def run_all(
     cases: list[dict[str, Any]],
     architectures: list[str],
     use_cache: bool,
+    cache_writes: bool | None = None,
 ) -> dict[str, Any]:
     from eval.metrics import CaseResult, by_tag, delta, failures, summarise
 
@@ -221,7 +228,7 @@ def run_all(
         print(f"\n=== architecture {architecture} ===")
         for case in cases:
             try:
-                raw = run_case(case, architecture, use_cache)
+                raw = run_case(case, architecture, use_cache, cache_writes)
             except Exception as exc:  # a crash is a failure, never an abort
                 raw = _crash_record(case, architecture, exc)
                 print(f"  CRASH {case['case_id']}: {type(exc).__name__}: {exc}")
@@ -454,7 +461,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--arch", default="both", help="A, B, or both")
     parser.add_argument("--split", default="all", choices=["dev", "held_out", "all"])
     parser.add_argument("--cases", default=str(ROOT / "eval" / "cases.jsonl"))
-    parser.add_argument("--no-cache", action="store_true", help="ignore the LLM cache")
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="ignore the LLM cache and do not write to it",
+    )
+    parser.add_argument(
+        "--fresh",
+        action="store_true",
+        help="bypass cached responses (live API) but still update the cache",
+    )
     parser.add_argument("--out-dir", default=str(RESULTS_DIR))
     args = parser.parse_args(argv)
 
@@ -470,16 +486,26 @@ def main(argv: list[str] | None = None) -> int:
         print("no cases matched", file=sys.stderr)
         return 2
 
+    if args.no_cache and args.fresh:
+        parser.error("--no-cache and --fresh are mutually exclusive")
+    use_cache = not args.no_cache and not args.fresh
+    cache_writes = not args.no_cache  # --fresh re-queries but keeps the cache current
+    mode = "off" if args.no_cache else ("fresh (live, cache updated)" if args.fresh else "on")
+
     service = VendorService()
     transport = service.start()
     print(f"vendor-risk transport: {transport}")
-    print(f"cases: {len(cases)}  split: {args.split}  cache: {not args.no_cache}")
+    print(f"cases: {len(cases)}  split: {args.split}  cache: {mode}")
 
     try:
-        payload = run_all(cases, architectures, use_cache=not args.no_cache)
+        payload = run_all(
+            cases, architectures, use_cache=use_cache, cache_writes=cache_writes
+        )
     finally:
         service.stop()
 
+    payload["metadata"]["cache_writes"] = cache_writes
+    payload["metadata"]["fresh"] = args.fresh
     payload["metadata"]["cases_file"] = str(Path(args.cases).relative_to(ROOT))
     payload["metadata"]["split"] = args.split
     json_path, md_path = write_results(payload, architectures, Path(args.out_dir))

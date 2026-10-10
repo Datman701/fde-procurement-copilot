@@ -329,7 +329,7 @@ class TestAdapter:
         import app.analyze as analyze_module
 
         original = analyze_module._build_client
-        analyze_module._build_client = lambda use_cache=True: client
+        analyze_module._build_client = lambda **kwargs: client
         try:
             result = handle_request("REQ-1005", architecture="single")
         finally:

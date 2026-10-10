@@ -76,6 +76,19 @@ def make_client(tmp_path, responses=None, fail_times=0, **overrides):
     return client
 
 
+def make_config() -> LLMConfig:
+    """Config for tests that want the client to build its own cache."""
+    return LLMConfig(
+        provider="gemini",
+        model="gemini-2.5-flash",
+        api_key="test-key",
+        base_url="https://example.invalid/v1",
+        requests_per_minute=100_000,
+        max_calls_per_run=12,
+        max_retries=1,
+    )
+
+
 # --------------------------------------------------------------------------- #
 # Provider resolution
 # --------------------------------------------------------------------------- #
@@ -234,6 +247,86 @@ class TestDiskCache:
         client.chat([{"role": "user", "content": "x"}])
         assert client.cached_calls == 0
         assert client.llm_calls == 2
+
+
+    def test_bypass_read_ignores_an_existing_entry_but_still_writes(self, tmp_path):
+        path = str(tmp_path / "c.json")
+        warm = DiskCache(path=path)
+        key = DiskCache.make_key({}, {"a": 1})
+        warm.set(key, {"text": "warm"})
+
+        fresh = DiskCache(path=path, bypass_read=True)
+        assert fresh.get(key) is None  # forced back to the provider
+        fresh.set(key, {"text": "refetched"})
+        fresh.flush()
+
+        reloaded = DiskCache(path=path)
+        assert reloaded.get(key)["text"] == "refetched"
+        # The fresh run merged with what was already there rather than wiping it.
+        assert len(reloaded._data) == 1
+
+    def test_read_only_serves_the_cache_but_never_writes(self, tmp_path):
+        path = str(tmp_path / "c.json")
+        warm = DiskCache(path=path)
+        key = DiskCache.make_key({}, {"a": 1})
+        warm.set(key, {"text": "warm"})
+        warm.flush()
+
+        frozen = DiskCache(path=path, read_only=True)
+        assert frozen.get(key)["text"] == "warm"
+        frozen.set(key, {"text": "changed"})
+        frozen.flush()
+
+        assert DiskCache(path=path).get(key)["text"] == "warm"
+        assert frozen.writes == 0
+
+    def test_client_default_cache_flags_match_use_cache(self, tmp_path):
+        path = str(tmp_path / "default.json")
+        os.environ["LLM_CACHE_PATH"] = path
+        try:
+            client = LLMClient(make_config(), transport="fake")
+            assert client.cache.enabled and not client.cache.bypass_read
+            assert not client.cache.read_only
+
+            frozen = LLMClient(
+                make_config(), use_cache=True, cache_writes=False, transport="fake"
+            )
+            assert frozen.cache.read_only
+
+            off = LLMClient(make_config(), use_cache=False, cache_writes=False, transport="fake")
+            assert not off.cache.enabled
+        finally:
+            os.environ.pop("LLM_CACHE_PATH", None)
+
+    def test_fresh_run_rerequests_and_updates_the_committed_cache(self, tmp_path):
+        """use_cache=False + cache_writes=True: live calls that refresh the cache."""
+        path = str(tmp_path / "fresh.json")
+        os.environ["LLM_CACHE_PATH"] = path
+        try:
+            prompt = [{"role": "user", "content": "same prompt"}]
+
+            seed = LLMClient(make_config(), transport="fake")
+            seed.provider_impl = FakeProvider([LLMResponse(text='{"v":1}')])
+            seed.chat(prompt)
+            assert len(seed.cache._data) == 1
+
+            fresh = LLMClient(
+                make_config(), use_cache=False, cache_writes=True, transport="fake"
+            )
+            fresh.provider_impl = FakeProvider([LLMResponse(text='{"v":2}')])
+            response = fresh.chat(prompt)
+            assert response.cached is False  # cache was deliberately bypassed
+            assert fresh.cached_calls == 0
+            assert fresh.llm_calls == 1
+            # Old entry kept, new response written alongside it.
+            assert len(fresh.cache._data) >= 1
+
+            replay = LLMClient(make_config(), transport="fake")
+            replay.provider_impl = FakeProvider([LLMResponse(text="{}")])
+            replay.chat(prompt)
+            assert replay.cached_calls == 1  # a later run reads the refreshed entry
+        finally:
+            os.environ.pop("LLM_CACHE_PATH", None)
 
 
 # --------------------------------------------------------------------------- #

@@ -80,6 +80,7 @@ def analyze(
     overlay: DataOverlay | dict[str, Any] | None = None,
     client: LLMClient | None = None,
     use_cache: bool = True,
+    cache_writes: bool | None = None,
     store: DataStore | None = None,
     requester: str | None = None,
     vendor_transport: str | None = None,
@@ -101,6 +102,12 @@ def analyze(
     client:
         Inject an :class:`LLMClient` (used by tests). One is built from the
         environment otherwise.
+    use_cache:
+        Read the on-disk LLM cache. ``False`` forces live provider calls.
+    cache_writes:
+        Write responses back to the cache. Defaults to ``use_cache``. Set
+        ``use_cache=False, cache_writes=True`` for a "fresh" run that re-queries
+        the provider but keeps the committed cache current.
     tool_result_sink:
         Optional observer for the actual envelopes produced during this run.
         It does not alter the Decision contract and is intended for local UI
@@ -112,7 +119,10 @@ def analyze(
 
     registry = build_registry(data_store, parsed, vendor_transport=vendor_transport)
 
-    llm = client if client is not None else _build_client(use_cache=use_cache)
+    if client is not None:
+        llm = client
+    else:
+        llm = _build_client(use_cache=use_cache, cache_writes=cache_writes)
     llm.new_run()
 
     started = time.perf_counter()
@@ -140,10 +150,15 @@ def analyze(
     return decision
 
 
-def _build_client(use_cache: bool) -> LLMClient:
+def _build_client(use_cache: bool, cache_writes: bool | None = None) -> LLMClient:
     config = LLMConfig.from_env()
-    cache = DiskCache(enabled=use_cache)
-    return LLMClient(config, cache=cache, use_cache=use_cache)
+    writes = use_cache if cache_writes is None else cache_writes
+    cache = DiskCache(
+        enabled=use_cache or writes,
+        bypass_read=not use_cache,
+        read_only=not writes,
+    )
+    return LLMClient(config, cache=cache, use_cache=use_cache, cache_writes=writes)
 
 
 __all__ = ["ARCHITECTURE_ALIASES", "analyze", "normalise_architecture"]
