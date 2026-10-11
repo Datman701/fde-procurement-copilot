@@ -8,7 +8,7 @@ accepts terms, or overrides Security, Privacy, Legal, Finance, or Procurement.
 ## Status
 
 The shared core, both agent architectures, UI, and evaluation harness are
-implemented and passing (286 tests). A 28-case live comparison of both
+implemented and passing (329 tests). A 28-case live comparison of both
 architectures has been published; see **Evaluation** below for the measured
 numbers, the results file, and the ship decision in `docs/memo.md`.
 

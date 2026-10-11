@@ -141,7 +141,7 @@ export default function App() {
         </button>
       </header>
 
-      <div className="layout">
+      <div className={`layout ${source === "free_text" ? "free-text" : ""}`}>
         <div className="left-column">
           <SetupPanel
             catalog={catalog}

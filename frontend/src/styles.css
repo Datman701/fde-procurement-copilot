@@ -128,8 +128,13 @@ h3 { font-size: var(--fs-md); margin: 14px 0 6px; color: var(--muted); text-tran
   align-items: start;
 }
 
+/* Free-text mode gives the compose area room for a writing guide beside the
+   textarea; the results column shrinks but keeps the remaining space. */
+.layout.free-text { grid-template-columns: minmax(600px, 680px) 1fr; }
+
 @media (max-width: 920px) {
-  .layout { grid-template-columns: 1fr; }
+  .layout,
+  .layout.free-text { grid-template-columns: 1fr; }
 }
 
 .panel {
@@ -757,6 +762,30 @@ summary {
 /* ------------------------------------------------------------------ *
  * Free-text request guide card
  * ------------------------------------------------------------------ */
+
+/* ---- free-text compose: textarea and writing guide side by side ------- */
+.compose-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+}
+
+.compose-guide {
+  position: sticky;
+  top: var(--sp-3);
+}
+.compose-guide .guide-card {
+  margin-top: 0;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+@media (max-width: 920px) {
+  .compose-grid { grid-template-columns: 1fr; }
+  .compose-guide { position: static; }
+  .compose-guide .guide-card { max-height: none; }
+}
 
 .guide-card {
   margin-top: var(--sp-3);

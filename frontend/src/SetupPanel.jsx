@@ -25,7 +25,7 @@ const CATALOG_NAMES =
 
 function RequestGuide() {
   return (
-    <details className="guide-card">
+    <details className="guide-card" open>
       <summary>How to write a request that parses</summary>
       <div className="guide-body">
         <p className="muted small">
@@ -184,26 +184,32 @@ export default function SetupPanel({
         </>
       ) : (
         <>
-          <label className="field-label" htmlFor="free-text">
-            Request in your own words
-          </label>
-          <textarea
-            id="free-text"
-            rows={5}
-            placeholder="e.g. Marketing needs a design tool for the new brand refresh, about $5k a year."
-            value={freeText}
-            onChange={(e) => setFreeText(e.target.value)}
-          />
-          <label className="field-label" htmlFor="requester-select">
-            Requester (optional)
-          </label>
-          <RequesterPicker
-            employees={catalog.employees}
-            value={requesterId}
-            onChange={setRequesterId}
-            annualCost={peekAnnualCost(freeText)}
-          />
-          <RequestGuide />
+          <div className="compose-grid">
+            <div className="compose-fields">
+              <label className="field-label" htmlFor="free-text">
+                Request in your own words
+              </label>
+              <textarea
+                id="free-text"
+                rows={8}
+                placeholder="e.g. Marketing needs a design tool for the new brand refresh, about $5k a year."
+                value={freeText}
+                onChange={(e) => setFreeText(e.target.value)}
+              />
+              <label className="field-label" htmlFor="requester-select">
+                Requester (optional)
+              </label>
+              <RequesterPicker
+                employees={catalog.employees}
+                value={requesterId}
+                onChange={setRequesterId}
+                annualCost={peekAnnualCost(freeText)}
+              />
+            </div>
+            <div className="compose-guide">
+              <RequestGuide />
+            </div>
+          </div>
         </>
       )}
 
