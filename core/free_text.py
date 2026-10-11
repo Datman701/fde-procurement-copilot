@@ -153,12 +153,6 @@ _NEGATED_URGENCY_RE = re.compile(
 )
 
 
-def _snippet(text: str, limit: int = 80) -> str:
-    """First clause of the prose, so product_name is not a wall of text."""
-    first = re.split(r"[.,;\n(]", text.strip(), maxsplit=1)[0].strip()
-    return first[:limit].strip()
-
-
 def extract(
     text: str,
     *,
@@ -193,8 +187,12 @@ def extract(
         record("data_access_level", level, level_evidence)
 
     # ---- product and vendor, resolved against real catalog/vendor names ----
-    product_name = _snippet(prose)
-    product_evidence = product_name
+    # Neither field has a prose fallback. Inventing a product name from the
+    # opening clause ("We need a tool for...") would fabricate a value the
+    # requester never stated, which is the same reason we refuse to invent an
+    # employee id. Left missing, the guardrail asks for the product instead.
+    product_name = ""
+    product_evidence = ""
     category = ""
     vendor_name = ""
     lowered = prose.lower()

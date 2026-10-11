@@ -74,12 +74,24 @@ class TestCatalogResolution:
         assert fields["category"] == "Design & Creative"
         assert "vendor_name" in {item.field for item in trail}
 
-    def test_unknown_product_falls_back_to_a_short_snippet(self):
-        fields, _ = extract(
+    def test_unknown_product_is_left_missing_not_invented_from_prose(self):
+        fields, trail = extract(
             "A tool nobody has heard of, because our workflow needs it.",
             store=store(),
         )
-        assert len(fields["product_name"]) <= 80
+        assert not fields["product_name"]
+        assert "product_name" not in {item.field for item in trail}
+
+    def test_a_long_opening_clause_does_not_become_the_product_name(self):
+        # An 85-character first sentence used to be copied verbatim into
+        # product_name, which is a wall of text rather than a product.
+        fields, trail = extract(
+            "We need a tool for our team to store internal documents and "
+            "PDFs and share them with external vendors. Not urgent.",
+            store=store(),
+        )
+        assert not fields["product_name"]
+        assert "product_name" not in {item.field for item in trail}
 
     def test_product_evidence_cites_the_matched_term_not_the_opening_clause(self):
         # "Quick one — the contracts team needs SignFlow again" used to be
