@@ -15,6 +15,20 @@ from tools.registry import ToolContext, ToolError
 
 
 def department_head(ctx: ToolContext, employee) -> dict[str, Any]:
+    # If the employee themselves is a Director and their manager is not a Director
+    # (or has no manager), they are the department head.
+    if employee.level.strip().lower() == "director":
+        manager = ctx.store.employee(employee.manager_id) if employee.manager_id else None
+        if manager is None or manager.level.strip().lower() != "director":
+            return {
+                "resolved": True,
+                "name": employee.name,
+                "employee_id": employee.employee_id,
+                "role": "Director",
+                "department": employee.department,
+                "basis": "requester is a Director with no Director manager; they are the department head",
+            }
+    # Otherwise, if their manager is a Director, that manager is the department head.
     manager = ctx.store.employee(employee.manager_id) if employee.manager_id else None
     if manager is not None and manager.level.strip().lower() == "director":
         return {
@@ -25,7 +39,24 @@ def department_head(ctx: ToolContext, employee) -> dict[str, Any]:
             "department": manager.department,
             "basis": "requester's manager is a Director in employees.csv",
         }
-    directors = [e for e in ctx.store.employees if e.level.strip().lower() == "director"]
+    # Fallback: find a Director in the same department who has no Director manager
+    directors_in_dept = [
+        e for e in ctx.store.employees
+        if e.level.strip().lower() == "director" and e.department == employee.department
+    ]
+    for d in directors_in_dept:
+        m = ctx.store.employee(d.manager_id) if d.manager_id else None
+        if m is None or m.level.strip().lower() != "director":
+            return {
+                "resolved": True,
+                "name": d.name,
+                "employee_id": d.employee_id,
+                "role": "Director",
+                "department": d.department,
+                "basis": f"found Director {d.name} in {d.department} with no Director manager",
+            }
+    # Final fallback
+    all_directors = [e for e in ctx.store.employees if e.level.strip().lower() == "director"]
     return {
         "resolved": False,
         "name": None,
@@ -35,7 +66,7 @@ def department_head(ctx: ToolContext, employee) -> dict[str, Any]:
         "basis": (
             f"no Director row found for {employee.department}; "
             f"Procurement must identify the department head. "
-            f"Known directors: {sorted(d.name for d in directors)}"
+            f"Known directors: {sorted(d.name for d in all_directors)}"
         ),
     }
 
