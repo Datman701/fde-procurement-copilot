@@ -84,7 +84,15 @@ def run_analysis(body: AnalyzeBody) -> dict:
         try:
             target = store.request(body.request_id or "")
         except Exception as exc:
-            raise HTTPException(status_code=400, detail=f"Unknown request id.") from exc
+            raise HTTPException(
+                status_code=404, detail=f"Unknown request id: {body.request_id}"
+            ) from exc
+        # DataStore.request returns None rather than raising for an id it does
+        # not hold, which would otherwise reach analyze() and surface as a 500.
+        if target is None:
+            raise HTTPException(
+                status_code=404, detail=f"Unknown request id: {body.request_id}"
+            )
 
     tool_results: list = []
     extractions: list = []
