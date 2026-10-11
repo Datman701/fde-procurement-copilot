@@ -41,6 +41,25 @@ Rebuild the UI with `make ui-build` after editing `frontend/` (requires
 Node.js), or run the previous Streamlit interface with `make run-streamlit`.
 Never commit `.env` or credentials.
 
+## Try it in the browser (no install)
+
+A GitHub Codespace runs the whole app as one service, so nothing needs to be
+installed locally:
+
+**https://procurement-copilot-demo-jjq55vjwjgrjcq447-8501.app.github.dev**
+
+The container starts itself via `.devcontainer/devcontainer.json`, which runs
+`scripts/start_service.sh` on every start. That script is idempotent, uses
+`VENDOR_RISK_TRANSPORT=inprocess` so the mock vendor-risk API runs in the same
+process, and falls back to creating `.venv` if dependencies are missing. The
+outage simulation is a `DataStore` overlay flag rather than a killed socket, so
+it is unaffected by that transport choice.
+
+To run your own copy: open the repository in Codespaces, then set `LLM_API_KEY`
+as a Codespace secret (or place it in `.env`, which is gitignored). Without a
+key, catalog requests still work from the committed evaluation cache, but
+free-text analysis fails safe to `request_more_info`.
+
 ## Commands
 
 ```bash
