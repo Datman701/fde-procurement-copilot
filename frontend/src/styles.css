@@ -19,6 +19,7 @@
      1.4.11 needs 3:1) and are too light to carry text (needs 4.5:1). */
   --amber-ink: #8a5a00; /* 5.4:1 on --amber-bg */
   --red-ink: #a81f18;   /* 6.3:1 on --red-bg, 7.3:1 on --panel */
+  --green-ink: #17663a; /* 5.6:1 on --green-bg */
 
   /* Type scale */
   --fs-xs: 11.5px;
@@ -618,3 +619,80 @@ summary {
   color: var(--muted);
 }
 .budget-preview.over { color: var(--amber-ink); font-weight: 600; }
+
+/* ------------------------------------------------------------------ *
+ * Policy & reference panel
+ * ------------------------------------------------------------------ */
+
+.panel.reference { padding: 0; }
+.panel.reference > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+}
+.panel.reference > summary::-webkit-details-marker { display: none; }
+.panel.reference > summary::before {
+  content: "▸";
+  color: var(--muted);
+  font-size: var(--fs-md);
+  transition: transform 0.15s ease;
+}
+.panel.reference[open] > summary::before { transform: rotate(90deg); }
+.panel.reference[open] > summary { border-bottom: 1px solid var(--line); }
+.reference-title { font-size: var(--fs-lg); margin: 0; }
+.reference-body { padding: 14px 18px 18px; }
+
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  margin: var(--sp-2) 0 var(--sp-3);
+}
+.ref-table th {
+  text-align: left;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 0 10px 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.ref-table td {
+  padding: 8px 10px 8px 0;
+  border-bottom: 1px solid #edf1f6;
+  vertical-align: top;
+}
+.ref-table tr:last-child td { border-bottom: none; }
+.ref-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ref-notes { margin-top: 2px; max-width: 26ch; }
+.ref-badge { margin-left: 6px; }
+
+.ref-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+@media (max-width: 720px) { .ref-split { grid-template-columns: 1fr; } }
+.ref-list li { padding: 4px 0; }
+.ref-list code { font-size: var(--fs-xs); }
+
+.ref-search {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-2) 10px;
+  font: inherit;
+  background: #fff;
+  margin-bottom: var(--sp-1);
+}
+
+.ref-legend { display: inline-flex; gap: var(--sp-2); margin-left: var(--sp-2); }
+.ref-legend .badge { margin-left: 0; }
+
+.badge.ok { background: var(--green-bg); color: var(--green-ink); }
+.badge.bad { background: var(--red-bg); color: var(--red-ink); }
+.badge.warn { background: var(--amber-bg); color: var(--amber-ink); }

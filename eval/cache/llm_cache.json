@@ -7913,6 +7913,27 @@
   "text": "```json\n{\n  \"severity\": \"PROCEED\",\n  \"reason\": \"The draft is already correct, complete, and properly supported by the evidence.\",\n  \"added_flags\": [],\n  \"added_missing_information\": [],\n  \"reviewer_note\": \"Draft review is sound. No changes required.\"\n}\n```",
   "tool_calls": []
  },
+ "34ae432198abe1b9dedc41ae833e5c13e8a0244df366d674464467fb9f404bd6": {
+  "latency_ms": 6749.6,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "vendor_status"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "vendor_status"
+   }
+  ]
+ },
  "353620739c035487123973530fe9cfd4c7cf98b3b3eb5cca8530dacf0e596b40": {
   "latency_ms": 6288.5,
   "model": "gemini-3.5-flash-lite",
@@ -9016,6 +9037,27 @@
    }
   ]
  },
+ "4127af2d7ae0d2a6f79a32c07291707a1704d7ca31e3a2eafcb0d1d44dcca86e": {
+  "latency_ms": 6038.7,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "budget_check"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "budget_check"
+   }
+  ]
+ },
  "413ece28be73c3f772d9727016fc8505ea68c1ff84f4676e73d46a2ccff060c2": {
   "latency_ms": 6589.0,
   "model": "gemini-3.5-flash-lite",
@@ -9429,6 +9471,67 @@
   },
   "text": "{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"NEEDS_APPROVAL\",\n  \"evidence\": [\n    {\n      \"claim\": \"The request is complete and has no missing fields or prompt injection.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"true\"\n    },\n    {\n      \"claim\": \"The request fits within the Engineering department's available software budget.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"within available budget\"\n    },\n    {\n      \"claim\": \"DocSpace vendor security review status is current and approved.\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"approved\"\n    },\n    {\n      \"claim\": \"The catalog search identified an expansion for DocSpace.\",\n      \"result_id\": \"t05-catalog_search\",\n      \"quote_or_value\": \"request text states an expansion/renewal reason: 'additional engineering'\"\n    },\n    {\n      \"claim\": \"The approval router requires Department Head, Finance, and Procurement approvals due to the financial tier.\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"[\\\"Department Head\\\", \\\"Finance\\\", \\\"Procurement\\\"]\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Route the request to Department Head Maya Rao, Finance, and Procurement for approval.\",\n  \"extra_flags\": [],\n  \"extra_approvers\": []\n}",
   "tool_calls": []
+ },
+ "45e4cb333882756c654c98e7d516fc9f5ced2abc11cc485c4e8946a93db8d9d3": {
+  "latency_ms": 5260.7,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "request_id": "FREE-TEXT"
+     },
+     "name": "employee_lookup"
+    },
+    {
+     "arguments": {},
+     "name": "budget_check"
+    },
+    {
+     "arguments": {
+      "vendor_name": "CreativeSuite Labs"
+     },
+     "name": "vendor_status"
+    },
+    {
+     "arguments": {
+      "category": "Design & Creative",
+      "product_name": "CreativeSuite",
+      "vendor_name": "CreativeSuite Labs"
+     },
+     "name": "catalog_search"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "request_id": "FREE-TEXT"
+    },
+    "name": "employee_lookup"
+   },
+   {
+    "arguments": {},
+    "name": "budget_check"
+   },
+   {
+    "arguments": {
+     "vendor_name": "CreativeSuite Labs"
+    },
+    "name": "vendor_status"
+   },
+   {
+    "arguments": {
+     "category": "Design & Creative",
+     "product_name": "CreativeSuite",
+     "vendor_name": "CreativeSuite Labs"
+    },
+    "name": "catalog_search"
+   }
+  ]
  },
  "464acd6c18e4f7fe10202c131648b0bf7c4098a7bd5394f3b8cc8bac14078c89": {
   "latency_ms": 5469.6,
@@ -14489,6 +14592,31 @@
    }
   ]
  },
+ "6b5e79769625f12016bcdd7a9022dc580bd14bc967a68d7ac966935a6de27484": {
+  "latency_ms": 6654.7,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "request_id": "FREE-TEXT"
+     },
+     "name": "employee_lookup"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "request_id": "FREE-TEXT"
+    },
+    "name": "employee_lookup"
+   }
+  ]
+ },
  "6c6f20eec9bef804e1c6b83bc3a50d4e77c07845c97e2ca1991060bad5cd9dd9": {
   "latency_ms": 5125.9,
   "model": "gemini-3.5-flash-lite",
@@ -14775,6 +14903,44 @@
     "name": "request_validation"
    }
   ]
+ },
+ "6f9a3c3cfbeaa0bc7d82d4e6ba372c9b33246b52e2d0731622bceafad3c0038e": {
+  "latency_ms": 6496.8,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Request validation found the request incomplete and missing multiple required fields",
+     "quote_or_value": "false",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Missing fields include requester_id, vendor_name, annual_cost_usd, user_count, and data_access_level",
+     "quote_or_value": "[\"requester_id\", \"vendor_name\", \"annual_cost_usd\", \"user_count\", \"data_access_level\"]",
+     "result_id": "t01-request_validation"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "P1-REQUIRED-INFO"
+   ],
+   "missing_information": [
+    "requester is missing or unstated - policy section 1 requires it before approval",
+    "vendor is missing or unstated - policy section 1 requires it before approval",
+    "annual cost is missing or unstated - policy section 1 requires it before approval",
+    "number of users / licenses is missing or unstated - policy section 1 requires it before approval",
+    "intended data-access level is missing or unstated - policy section 1 requires it before approval"
+   ],
+   "next_step": "Request the missing mandatory information from the requester in accordance with policy section P1-REQUIRED-INFO.",
+   "recommendation": "request_more_info",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation found the request incomplete and missing multiple required fields\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id, vendor_name, annual_cost_usd, user_count, and data_access_level\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"[\\\"requester_id\\\", \\\"vendor_name\\\", \\\"annual_cost_usd\\\", \\\"user_count\\\", \\\"data_access_level\\\"]\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester is missing or unstated - policy section 1 requires it before approval\",\n    \"vendor is missing or unstated - policy section 1 requires it before approval\",\n    \"annual cost is missing or unstated - policy section 1 requires it before approval\",\n    \"number of users / licenses is missing or unstated - policy section 1 requires it before approval\",\n    \"intended data-access level is missing or unstated - policy section 1 requires it before approval\"\n  ],\n  \"next_step\": \"Request the missing mandatory information from the requester in accordance with policy section P1-REQUIRED-INFO.\",\n  \"extra_flags\": [\n    \"P1-REQUIRED-INFO\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation found the request incomplete and missing multiple required fields\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id, vendor_name, annual_cost_usd, user_count, and data_access_level\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"[\\\"requester_id\\\", \\\"vendor_name\\\", \\\"annual_cost_usd\\\", \\\"user_count\\\", \\\"data_access_level\\\"]\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester is missing or unstated - policy section 1 requires it before approval\",\n    \"vendor is missing or unstated - policy section 1 requires it before approval\",\n    \"annual cost is missing or unstated - policy section 1 requires it before approval\",\n    \"number of users / licenses is missing or unstated - policy section 1 requires it before approval\",\n    \"intended data-access level is missing or unstated - policy section 1 requires it before approval\"\n  ],\n  \"next_step\": \"Request the missing mandatory information from the requester in accordance with policy section P1-REQUIRED-INFO.\",\n  \"extra_flags\": [\n    \"P1-REQUIRED-INFO\"\n  ],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
  },
  "7058ab30f2fe46d7a6ccc1dfc262552cc084bda073c00713c171a5bf1df9267e": {
   "latency_ms": 5238.8,
@@ -15906,6 +16072,77 @@
    }
   ]
  },
+ "7a3364fe50b341f50f1b0a1d8c170e395f6b5c3aa556978a6a74a9a0d15e8d81": {
+  "latency_ms": 1826.9,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
+   }
+  ]
+ },
+ "7a89606ff3c35aca8a8803c57ff231a092586111f9f5f9d09c51b66022e756af": {
+  "latency_ms": 6032.0,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Request validation failed because required fields are missing",
+     "quote_or_value": "false",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Missing fields include requester_id and vendor_name",
+     "quote_or_value": "[\"requester_id\", \"vendor_name\"]",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Employee lookup failed due to unknown requester_id",
+     "quote_or_value": "FAILED: request FREE-TEXT references unknown requester_id",
+     "result_id": "t02-employee_lookup"
+    },
+    {
+     "claim": "Budget check failed because department is None",
+     "quote_or_value": "FAILED: no budget row for department None; cannot evaluate this request",
+     "result_id": "t03-budget_check"
+    },
+    {
+     "claim": "Vendor status check failed because no vendor name was supplied",
+     "quote_or_value": "no vendor name was supplied or stated in the request",
+     "result_id": "t04-vendor_status"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "MISSING_REQUIRED_INFO"
+   ],
+   "missing_information": [
+    "requester_id",
+    "vendor_name"
+   ],
+   "next_step": "Obtain the requester ID and vendor name from the user before proceeding with validation and approvals.",
+   "recommendation": "request_more_info",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation failed because required fields are missing\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id and vendor_name\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"[\\\"requester_id\\\", \\\"vendor_name\\\"]\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    },\n    {\n      \"claim\": \"Budget check failed because department is None\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"FAILED: no budget row for department None; cannot evaluate this request\"\n    },\n    {\n      \"claim\": \"Vendor status check failed because no vendor name was supplied\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"no vendor name was supplied or stated in the request\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id\",\n    \"vendor_name\"\n  ],\n  \"next_step\": \"Obtain the requester ID and vendor name from the user before proceeding with validation and approvals.\",\n  \"extra_flags\": [\n    \"MISSING_REQUIRED_INFO\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation failed because required fields are missing\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id and vendor_name\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"[\\\"requester_id\\\", \\\"vendor_name\\\"]\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    },\n    {\n      \"claim\": \"Budget check failed because department is None\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"FAILED: no budget row for department None; cannot evaluate this request\"\n    },\n    {\n      \"claim\": \"Vendor status check failed because no vendor name was supplied\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"no vendor name was supplied or stated in the request\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id\",\n    \"vendor_name\"\n  ],\n  \"next_step\": \"Obtain the requester ID and vendor name from the user before proceeding with validation and approvals.\",\n  \"extra_flags\": [\n    \"MISSING_REQUIRED_INFO\"\n  ],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
+ },
  "7a9edc286a411f211593c05615eed65c531a9236404f62d3ad2fb90dc38eba9c": {
   "latency_ms": 1569.2,
   "model": "gemini-3.5-flash-lite",
@@ -16302,6 +16539,48 @@
     "name": "submit_decision"
    }
   ]
+ },
+ "7dd96d5e047375ca2ef4ec5c41707aa9008d155b801158be417c352c5d1818ac": {
+  "latency_ms": 6666.8,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Annual cost is $25,000.00, exceeding available budget by $10,000.00",
+     "quote_or_value": "over_budget",
+     "result_id": "t03-budget_check"
+    },
+    {
+     "claim": "Required approvals include Department Head, Finance, and Procurement",
+     "quote_or_value": "[\"Department Head\", \"Finance\", \"Procurement\"]",
+     "result_id": "t06-approval_router"
+    },
+    {
+     "claim": "Catalog search shows CreativeSuite is already an approved product for this vendor and category",
+     "quote_or_value": "CreativeSuite (SW002) from CreativeSuite Labs is already the approved product for this request's vendor and category (Design & Creative, Approved, 40 seats, scope Marketing).",
+     "result_id": "t05-catalog_search"
+    },
+    {
+     "claim": "Vendor security status is approved and current",
+     "quote_or_value": "Approved",
+     "result_id": "t04-vendor_status"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "over_budget"
+   ],
+   "missing_information": [],
+   "next_step": "Escalate to Department Head, Finance, and Procurement for review, addressing the budget shortfall ($10,000.00 over available Marketing budget) and the catalog overlap.",
+   "recommendation": "proceed_with_approvals",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Annual cost is $25,000.00, exceeding available budget by $10,000.00\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"over_budget\"\n    },\n    {\n      \"claim\": \"Required approvals include Department Head, Finance, and Procurement\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"[\\\"Department Head\\\", \\\"Finance\\\", \\\"Procurement\\\"]\"\n    },\n    {\n      \"claim\": \"Catalog search shows CreativeSuite is already an approved product for this vendor and category\",\n      \"result_id\": \"t05-catalog_search\",\n      \"quote_or_value\": \"CreativeSuite (SW002) from CreativeSuite Labs is already the approved product for this request's vendor and category (Design & Creative, Approved, 40 seats, scope Marketing).\"\n    },\n    {\n      \"claim\": \"Vendor security status is approved and current\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"Approved\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Escalate to Department Head, Finance, and Procurement for review, addressing the budget shortfall ($10,000.00 over available Marketing budget) and the catalog overlap.\",\n  \"extra_flags\": [\n    \"over_budget\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"proceed_with_approvals\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Annual cost is $25,000.00, exceeding available budget by $10,000.00\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"over_budget\"\n    },\n    {\n      \"claim\": \"Required approvals include Department Head, Finance, and Procurement\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"[\\\"Department Head\\\", \\\"Finance\\\", \\\"Procurement\\\"]\"\n    },\n    {\n      \"claim\": \"Catalog search shows CreativeSuite is already an approved product for this vendor and category\",\n      \"result_id\": \"t05-catalog_search\",\n      \"quote_or_value\": \"CreativeSuite (SW002) from CreativeSuite Labs is already the approved product for this request's vendor and category (Design & Creative, Approved, 40 seats, scope Marketing).\"\n    },\n    {\n      \"claim\": \"Vendor security status is approved and current\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"Approved\"\n    }\n  ],\n  \"missing_information\": [],\n  \"next_step\": \"Escalate to Department Head, Finance, and Procurement for review, addressing the budget shortfall ($10,000.00 over available Marketing budget) and the catalog overlap.\",\n  \"extra_flags\": [\n    \"over_budget\"\n  ],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
  },
  "7e7fa91f668143cf32b029c208b48ee4dd89aa72bce5c851a48656f31cf75b5a": {
   "latency_ms": 1404.8,
@@ -21619,6 +21898,51 @@
    }
   ]
  },
+ "a728c9c2b30abdbddbf9fd16799967f3bf6aca5ba7b7aef502b60c0bb32a3199": {
+  "latency_ms": 6900.5,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": {
+   "evidence": [
+    {
+     "claim": "Request validation found the request incomplete because requester_id is missing.",
+     "quote_or_value": "false",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Missing fields include requester_id.",
+     "quote_or_value": "['requester_id']",
+     "result_id": "t01-request_validation"
+    },
+    {
+     "claim": "Employee lookup failed due to unknown requester_id.",
+     "quote_or_value": "FAILED: request FREE-TEXT references unknown requester_id",
+     "result_id": "t02-employee_lookup"
+    },
+    {
+     "claim": "Budget check failed because no budget row was found for department None.",
+     "quote_or_value": "FAILED: no budget row for department None; cannot evaluate this request",
+     "result_id": "t03-budget_check"
+    }
+   ],
+   "extra_approvers": [],
+   "extra_flags": [
+    "MISSING_REQUESTER",
+    "BUDGET_EVALUATION_FAILED"
+   ],
+   "missing_information": [
+    "requester_id is missing or unstated - policy section 1 requires it before approval"
+   ],
+   "next_step": "Obtain the requester ID for Maria Chen so that employee lookup and department budget checks can be completed.",
+   "recommendation": "request_more_info",
+   "severity": "ESCALATE_TO_HUMAN"
+  },
+  "raw": {
+   "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation found the request incomplete because requester_id is missing.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"['requester_id']\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id.\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    },\n    {\n      \"claim\": \"Budget check failed because no budget row was found for department None.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"FAILED: no budget row for department None; cannot evaluate this request\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id is missing or unstated - policy section 1 requires it before approval\"\n  ],\n  \"next_step\": \"Obtain the requester ID for Maria Chen so that employee lookup and department budget checks can be completed.\",\n  \"extra_flags\": [\n    \"MISSING_REQUESTER\",\n    \"BUDGET_EVALUATION_FAILED\"\n  ],\n  \"extra_approvers\": []\n}",
+   "tool_calls": []
+  },
+  "text": "{\n  \"recommendation\": \"request_more_info\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Request validation found the request incomplete because requester_id is missing.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"false\"\n    },\n    {\n      \"claim\": \"Missing fields include requester_id.\",\n      \"result_id\": \"t01-request_validation\",\n      \"quote_or_value\": \"['requester_id']\"\n    },\n    {\n      \"claim\": \"Employee lookup failed due to unknown requester_id.\",\n      \"result_id\": \"t02-employee_lookup\",\n      \"quote_or_value\": \"FAILED: request FREE-TEXT references unknown requester_id\"\n    },\n    {\n      \"claim\": \"Budget check failed because no budget row was found for department None.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"FAILED: no budget row for department None; cannot evaluate this request\"\n    }\n  ],\n  \"missing_information\": [\n    \"requester_id is missing or unstated - policy section 1 requires it before approval\"\n  ],\n  \"next_step\": \"Obtain the requester ID for Maria Chen so that employee lookup and department budget checks can be completed.\",\n  \"extra_flags\": [\n    \"MISSING_REQUESTER\",\n    \"BUDGET_EVALUATION_FAILED\"\n  ],\n  \"extra_approvers\": []\n}",
+  "tool_calls": []
+ },
  "a77d785fcc0d5934563c5e3cd26279068f9cb06b04f4657d15f2f1641e55bcd9": {
   "latency_ms": 5820.7,
   "model": "gemini-3.5-flash-lite",
@@ -22946,6 +23270,52 @@
   "text": "{\n  \"recommendation\": \"escalate_security_review\",\n  \"severity\": \"ESCALATE_TO_HUMAN\",\n  \"evidence\": [\n    {\n      \"claim\": \"Vendor status check failed due to a simulated whole-service outage.\",\n      \"result_id\": \"t04-vendor_status\",\n      \"quote_or_value\": \"FAILED: vendor-risk service unavailable (simulated whole-service outage)\"\n    },\n    {\n      \"claim\": \"Approval router requires Manager, Security, and Legal review due to unavailable vendor evidence.\",\n      \"result_id\": \"t06-approval_router\",\n      \"quote_or_value\": \"vendor-risk service unavailable (simulated whole-service outage)\"\n    },\n    {\n      \"claim\": \"Budget check confirms the request fits within available department funds.\",\n      \"result_id\": \"t03-budget_check\",\n      \"quote_or_value\": \"within available budget\"\n    }\n  ],\n  \"missing_information\": [\n    \"Vendor risk and compliance verification data\"\n  ],\n  \"next_step\": \"Have security and legal review the vendor manually due to the vendor-risk service outage before any procurement decision is made.\",\n  \"extra_flags\": [\n    \"VENDOR_EVIDENCE_UNAVAILABLE\"\n  ],\n  \"extra_approvers\": [\n    \"Security\",\n    \"Legal\"\n  ]\n}",
   "tool_calls": []
  },
+ "b103b46bdef516021e3fb9e25ddaec792a3f7b28ce1023ca09ed515e5c6e4144": {
+  "latency_ms": 1044.0,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
+   }
+  ]
+ },
+ "b1213d26a3bcd38df4514ecdbab1715ed3922357975ca4899d324f7fea952522": {
+  "latency_ms": 5678.8,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "request_id": "FREE-TEXT"
+     },
+     "name": "employee_lookup"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "request_id": "FREE-TEXT"
+    },
+    "name": "employee_lookup"
+   }
+  ]
+ },
  "b1c1eaab0c1fb2137af649dd6263c91f003ee37bf57c0acd47be4f08324667fb": {
   "latency_ms": 6883.1,
   "model": "gemini-3.5-flash-lite",
@@ -23041,6 +23411,27 @@
      "request_id": "t01-request_validation"
     },
     "name": "employee_lookup"
+   }
+  ]
+ },
+ "b29db4c96ac19be20230f213015f076184c865ccffda95d282f35fdcfbfb9ac3": {
+  "latency_ms": 1927.2,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
    }
   ]
  },
@@ -24408,6 +24799,41 @@
    }
   ]
  },
+ "c05264bd6d45147bb477de1420c73ee05eb675adc96031afaa4ec0aa78389431": {
+  "latency_ms": 5887.0,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {
+      "budget_result_id": "t03-budget_check",
+      "category": "Design & Creative",
+      "data_access_level": "internal_documents",
+      "requested_integrations": [],
+      "vendor_name": "CreativeSuite Labs",
+      "vendor_result_id": "t04-vendor_status"
+     },
+     "name": "approval_router"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {
+     "budget_result_id": "t03-budget_check",
+     "category": "Design & Creative",
+     "data_access_level": "internal_documents",
+     "requested_integrations": [],
+     "vendor_name": "CreativeSuite Labs",
+     "vendor_result_id": "t04-vendor_status"
+    },
+    "name": "approval_router"
+   }
+  ]
+ },
  "c0fcbf6db72de56dd668e3bd1cfd4083dec8ab7d0a6c5ffdd922b144ec92a050": {
   "latency_ms": 965.0,
   "model": "gemini-3.5-flash-lite",
@@ -24529,6 +24955,27 @@
    {
     "arguments": {},
     "name": "request_validation"
+   }
+  ]
+ },
+ "c1fdf566f5bac19fbb94d34441bc324c495f0fbbc5a4520fecacca230e794617": {
+  "latency_ms": 4418.8,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "budget_check"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "budget_check"
    }
   ]
  },
@@ -28880,6 +29327,27 @@
      "severity": "ESCALATE_TO_HUMAN"
     },
     "name": "submit_decision"
+   }
+  ]
+ },
+ "e0d1bb8ec303655a412e7959aaaa1101323fafbde26e94ca44c009af6ab6c6c1": {
+  "latency_ms": 1230.5,
+  "model": "gemini-3.5-flash-lite",
+  "parsed": null,
+  "raw": {
+   "text": "",
+   "tool_calls": [
+    {
+     "arguments": {},
+     "name": "request_validation"
+    }
+   ]
+  },
+  "text": "",
+  "tool_calls": [
+   {
+    "arguments": {},
+    "name": "request_validation"
    }
   ]
  },

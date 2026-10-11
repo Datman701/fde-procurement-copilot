@@ -53,5 +53,55 @@ class ApiValidationTests(unittest.TestCase):
         self.assertIsNone(lisa["department_head"])
 
 
+class ReferenceDataTests(unittest.TestCase):
+    """/api/reference mirrors core/policy.py so a reviewer can cross-check a
+    verdict against the source the guardrail actually read."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = TestClient(app).get("/api/reference").json()
+
+    def test_policy_header_is_exposed(self):
+        self.assertEqual(self.data["policy_version"], "2026.09")
+        self.assertEqual(self.data["reference_date"], "2026-09-30")
+        self.assertEqual(self.data["security_review_validity_days"], 365)
+
+    def test_thresholds_match_the_policy_table(self):
+        tiers = self.data["thresholds"]
+        self.assertEqual(len(tiers), 4)
+        self.assertEqual(tiers[0]["approvers"], ["Manager"])
+        self.assertEqual(tiers[1]["approvers"], ["Department Head", "Procurement"])
+        self.assertEqual(
+            tiers[2]["approvers"], ["Department Head", "Finance", "Procurement"]
+        )
+        self.assertEqual(
+            tiers[3]["approvers"],
+            ["Department Head", "Finance", "CFO", "Procurement"],
+        )
+        self.assertIsNone(tiers[3]["max_usd"])
+
+    def test_expired_and_current_reviews_are_distinguished(self):
+        by_name = {v["vendor_name"]: v for v in self.data["vendors"]}
+
+        # Reviewed 2025-07-01 -> expired 365 days later, before the reference date.
+        signalwatch = by_name["SignalWatch"]
+        self.assertFalse(signalwatch["security_review_current"])
+        self.assertEqual(signalwatch["security_review_date"], "2025-07-01")
+
+        creative = by_name["CreativeSuite Labs"]
+        self.assertTrue(creative["security_review_current"])
+
+        # A new vendor with no review on record is not "still current".
+        brandboard = by_name["BrandBoard"]
+        self.assertTrue(brandboard["is_new"])
+        self.assertIsNone(brandboard["security_review_date"])
+        self.assertFalse(brandboard["security_review_current"])
+
+    def test_department_budgets_are_exposed(self):
+        budgets = {b["department"]: b for b in self.data["budgets"]}
+        self.assertEqual(budgets["Marketing"]["available_usd"], 15000)
+        self.assertEqual(budgets["Engineering"]["available_usd"], 26000)
+
+
 if __name__ == "__main__":
     unittest.main()

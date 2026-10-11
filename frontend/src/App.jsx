@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchCatalog, fetchRequestDetails, runAnalysis } from "./api.js";
 import SetupPanel from "./SetupPanel.jsx";
+import ReferencePanel from "./ReferencePanel.jsx";
 import ResultsPanel from "./ResultsPanel.jsx";
 
 // The UI already quotes "10-40 seconds" to the user, so the timeout has
@@ -132,29 +133,32 @@ export default function App() {
       </header>
 
       <div className="layout">
-        <SetupPanel
-          catalog={catalog}
-          catalogError={catalogError}
-          onRetryCatalog={() => setCatalogAttempt((n) => n + 1)}
-          source={source}
-          setSource={setSource}
-          requestId={requestId}
-          setRequestId={setRequestId}
-          requestDetails={requestDetails}
-          freeText={freeText}
-          setFreeText={setFreeText}
-          requesterId={requesterId}
-          setRequesterId={setRequesterId}
-          architecture={architecture}
-          setArchitecture={setArchitecture}
-          useCache={useCache}
-          setUseCache={setUseCache}
-          simulateOutage={simulateOutage}
-          setSimulateOutage={setSimulateOutage}
-          loading={loading}
-          canRun={canRun}
-          onRun={analyze}
-        />
+        <div className="left-column">
+          <SetupPanel
+            catalog={catalog}
+            catalogError={catalogError}
+            onRetryCatalog={() => setCatalogAttempt((n) => n + 1)}
+            source={source}
+            setSource={setSource}
+            requestId={requestId}
+            setRequestId={setRequestId}
+            requestDetails={requestDetails}
+            freeText={freeText}
+            setFreeText={setFreeText}
+            requesterId={requesterId}
+            setRequesterId={setRequesterId}
+            architecture={architecture}
+            setArchitecture={setArchitecture}
+            useCache={useCache}
+            setUseCache={setUseCache}
+            simulateOutage={simulateOutage}
+            setSimulateOutage={setSimulateOutage}
+            loading={loading}
+            canRun={canRun}
+            onRun={analyze}
+          />
+          <ReferencePanel />
+        </div>
 
         <div className="results-column">
           {loading && (

@@ -19,6 +19,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.analyze import analyze
+from core import policy
 from core.data import DataStore
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -100,6 +101,88 @@ def list_requests() -> dict:
             for r in store.requests
         ],
         "employees": employees,
+    }
+
+
+@app.get("/api/reference")
+def reference_data() -> dict:
+    """Policy, thresholds and registry data served from the *same* modules the
+    guardrail reads, so a reviewer can check a verdict against its source.
+    """
+    store = DataStore.load()
+
+    tiers = [
+        ("Up to $1,000", policy.TIER_MANAGER_MAX_USD),
+        ("$1,000.01 - $10,000", policy.TIER_DEPT_PROC_MAX_USD),
+        ("$10,000.01 - $25,000", policy.TIER_DEPT_FIN_PROC_MAX_USD),
+        ("Above $25,000", policy.TIER_DEPT_FIN_PROC_MAX_USD + 0.01),
+    ]
+    thresholds = [
+        {
+            "label": label,
+            "max_usd": None if label == "Above $25,000" else upper,
+            "approvers": [who for who, _ in policy.financial_approvers(upper)],
+        }
+        for label, upper in tiers
+    ]
+
+    vendors = []
+    for v in sorted(store.vendors, key=lambda x: x.vendor_id):
+        risk = store.vendor_risk_record(v.vendor_name) or {}
+        review_date = policy.parse_date(v.security_review_date) or policy.parse_date(
+            risk.get("last_review_date")
+        )
+        vendors.append(
+            {
+                "vendor_id": v.vendor_id,
+                "vendor_name": v.vendor_name,
+                "procurement_status": v.procurement_status,
+                "security_status": v.security_status,
+                "legal_terms_status": v.legal_terms_status,
+                "security_review_date": (
+                    review_date.isoformat() if review_date else None
+                ),
+                "security_review_current": policy.is_review_current(review_date),
+                "expires_on": (
+                    policy.review_expiry_date(review_date).isoformat()
+                    if policy.review_expiry_date(review_date)
+                    else None
+                ),
+                "days_since_review": policy.days_since(review_date),
+                "risk_level": risk.get("risk_level"),
+                "notes": v.notes,
+                "is_new": v.is_new,
+            }
+        )
+
+    budgets = [
+        {
+            "department": b.department,
+            "annual_usd": b.annual_software_budget_usd,
+            "committed_usd": b.committed_usd,
+            "available_usd": b.available_usd,
+        }
+        for b in store.budgets
+    ]
+
+    return {
+        "policy_version": policy.POLICY_VERSION,
+        "reference_date": policy.as_of_iso(),
+        "security_review_validity_days": policy.SECURITY_REVIEW_VALIDITY_DAYS,
+        "new_vendor_legal_threshold_usd": policy.NEW_VENDOR_LEGAL_THRESHOLD_USD,
+        "thresholds": thresholds,
+        "data_access": {
+            "security_triggers": dict(policy.DATA_ACCESS_SECURITY),
+            "privacy_triggers": dict(policy.DATA_ACCESS_PRIVACY),
+            "no_trigger": sorted(policy.DATA_ACCESS_NONE),
+            "integration_keywords": [
+                {"keyword": k, "trigger": t}
+                for k, t in policy.INTEGRATION_SECURITY_KEYWORDS
+            ],
+        },
+        "vendors": vendors,
+        "budgets": budgets,
+        "clauses": policy.CLAUSES,
     }
 
 

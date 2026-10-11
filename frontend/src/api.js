@@ -19,6 +19,10 @@ export function fetchCatalog(signal) {
   return request("/api/requests", { signal });
 }
 
+export function fetchReference(signal) {
+  return request("/api/reference", { signal });
+}
+
 export function fetchRequestDetails(requestId, signal) {
   return request(`/api/requests/${encodeURIComponent(requestId)}`, { signal });
 }
