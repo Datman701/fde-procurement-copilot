@@ -1,0 +1,40 @@
+{
+  "name": "AI Procurement Request Copilot",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20",
+      "nodeGypDependencies": false
+    }
+  },
+
+  // The API and the built React bundle are served by one uvicorn process.
+  "forwardPorts": [8501],
+  "portsAttributes": {
+    "8501": {
+      "label": "Procurement Copilot UI",
+      "onAutoForward": "openPreview"
+    }
+  },
+
+  // Python only. frontend/dist is committed, so Node is present but not
+  // required unless the UI is changed.
+  "postCreateCommand": "pip install -r requirements.txt",
+
+  // Runs on every Codespace start, so the app is up without the reader
+  // having to know any commands. Safe to re-run.
+  "postStartCommand": "bash scripts/start_service.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  }
+}
