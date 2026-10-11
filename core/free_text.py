@@ -228,7 +228,12 @@ def extract(
         record("category", category, product_name)
 
     # ---- requester -----------------------------------------------------------
+    # An explicit choice in the UI wins. Prose only fills the gap, and it never
+    # silently overrides: if the two disagree, both are surfaced so a human can
+    # settle it rather than the request quietly changing department.
     requester = (requester_id or "").strip()
+    prose_requester = ""
+    prose_claim = ""
     match = _REQUESTED_BY_RE.search(prose)
     if match:
         claimed = match.group(1).strip()
@@ -237,10 +242,20 @@ def extract(
         by_name = {e.name.lower(): e for e in employees}
         hit = by_id.get(claimed.lower()) or by_name.get(claimed.lower())
         if hit is not None:
-            requester = hit.employee_id
-            record("requester_id", requester, match.group(0).strip())
-    if not found.get("requester_id") and requester:
+            prose_requester = hit.employee_id
+            prose_claim = match.group(0).strip()
+
+    if requester:
         record("requester_id", requester, "requester selected in the form")
+        if prose_requester and prose_requester != requester:
+            record(
+                "requester_conflict",
+                prose_requester,
+                f"request text names {prose_claim}, but the form selected {requester}",
+            )
+    elif prose_requester:
+        requester = prose_requester
+        record("requester_id", requester, prose_claim)
 
     # ---- urgency -------------------------------------------------------------
     negated_u = _NEGATED_URGENCY_RE.search(prose)

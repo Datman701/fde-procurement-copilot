@@ -49,6 +49,7 @@ export default function ResultsPanel({
   decision,
   toolResults,
   extractions,
+  employees = [],
   handoffs,
   onAddHandoff,
 }) {
@@ -81,7 +82,7 @@ export default function ResultsPanel({
         <>
           <VerdictBanner severity={decision.severity} />
 
-          <ExtractionPanel extractions={extractions} />
+          <ExtractionPanel extractions={extractions} employees={employees} />
 
           <section className="panel">
             <h2>Recommended next step</h2>

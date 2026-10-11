@@ -172,6 +172,26 @@ class TestRequesterAndUrgency:
         fields, _ = extract("Need the tool, $100", store=store(), requester_id="E007")
         assert fields["requester_id"] == "E007"
 
+    def test_explicit_form_requester_beats_the_requester_named_in_prose(self):
+        # PROSE says "Requested by Sarah Lee" (E001). An explicit form choice
+        # must win, otherwise a typed requester silently changes department.
+        fields, trail = extract(PROSE, store=store(), requester_id="E007")
+        assert fields["requester_id"] == "E007"
+        evidence = [e.evidence for e in trail if e.field == "requester_id"]
+        assert evidence == ["requester selected in the form"]
+
+    def test_a_conflicting_prose_requester_is_surfaced_not_silently_dropped(self):
+        _, trail = extract(PROSE, store=store(), requester_id="E007")
+        conflicts = [e for e in trail if e.field == "requester_conflict"]
+        assert len(conflicts) == 1
+        assert conflicts[0].value == "E001"
+        assert "Sarah Lee" in conflicts[0].evidence
+        assert "E007" in conflicts[0].evidence
+
+    def test_no_conflict_recorded_when_prose_and_form_agree(self):
+        _, trail = extract(PROSE, store=store(), requester_id="E001")
+        assert [e for e in trail if e.field == "requester_conflict"] == []
+
     def test_explicit_urgency(self):
         fields, _ = extract(PROSE, store=store())
         assert fields["urgency"] == "urgent"

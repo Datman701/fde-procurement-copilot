@@ -168,6 +168,7 @@ export default function App() {
             decision={decision}
             toolResults={result?.tool_results ?? []}
             extractions={result?.extractions ?? []}
+            employees={catalog.employees}
             handoffs={handoffs}
             onAddHandoff={addHandoff}
           />

@@ -47,6 +47,49 @@ class AnalyzeBody(BaseModel):
 @app.get("/api/requests")
 def list_requests() -> dict:
     store = DataStore.load()
+
+    by_id = {e.employee_id: e for e in store.employees}
+    managed_by = {e.manager_id for e in store.employees if e.manager_id}
+
+    def _head_for(employee) -> dict | None:
+        """The resolved department head, using the same rule as
+        tools/employee.department_head(): the requester's manager, if that
+        person holds the Director level."""
+        manager = by_id.get(employee.manager_id) if employee.manager_id else None
+        if manager is not None and manager.level.strip().lower() == "director":
+            return {"employee_id": manager.employee_id, "name": manager.name}
+        return None
+
+    employees = []
+    for e in store.employees:
+        manager = by_id.get(e.manager_id) if e.manager_id else None
+        budget = store.budget(e.department)
+        employees.append(
+            {
+                "employee_id": e.employee_id,
+                "name": e.name,
+                "department": e.department,
+                "level": e.level,
+                "manager_id": e.manager_id,
+                "manager_name": manager.name if manager else None,
+                # A Director is a department head when someone reports to them.
+                "is_department_head": (
+                    e.level.strip().lower() == "director"
+                    and e.employee_id in managed_by
+                ),
+                "department_head": _head_for(e),
+                "budget": (
+                    {
+                        "annual_software_budget_usd": budget.annual_software_budget_usd,
+                        "committed_usd": budget.committed_usd,
+                        "available_usd": budget.available_usd,
+                    }
+                    if budget
+                    else None
+                ),
+            }
+        )
+
     return {
         "requests": [
             {
@@ -56,9 +99,7 @@ def list_requests() -> dict:
             }
             for r in store.requests
         ],
-        "employees": [
-            {"employee_id": e.employee_id, "name": e.name} for e in store.employees
-        ],
+        "employees": employees,
     }
 
 

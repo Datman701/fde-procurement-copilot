@@ -1,5 +1,6 @@
 // The left-hand input column. Pure presentation: App owns all state and
 // passes it down, so this file has no effects and no fetching.
+import RequesterPicker from "./RequesterPicker.jsx";
 
 const ARCHITECTURE_INFO = {
   A: {
@@ -11,6 +12,13 @@ const ARCHITECTURE_INFO = {
     detail: "A second AI reviews the draft and can only tighten it. Slower, extra scrutiny.",
   },
 };
+
+// Read the first dollar figure from the prose so the budget preview can warn
+// before the analysis runs. Derived for display only — never sent anywhere.
+function peekAnnualCost(text) {
+  const match = /\$\s?([\d,]+(?:\.\d+)?)/.exec(text || "");
+  return match ? Number(match[1].replace(/,/g, "")) : null;
+}
 
 export default function SetupPanel({
   catalog,
@@ -130,18 +138,12 @@ export default function SetupPanel({
           <label className="field-label" htmlFor="requester-select">
             Requester (optional)
           </label>
-          <select
-            id="requester-select"
+          <RequesterPicker
+            employees={catalog.employees}
             value={requesterId}
-            onChange={(e) => setRequesterId(e.target.value)}
-          >
-            <option value="">(not specified)</option>
-            {catalog.employees.map((e) => (
-              <option key={e.employee_id} value={e.employee_id}>
-                {e.employee_id} — {e.name}
-              </option>
-            ))}
-          </select>
+            onChange={setRequesterId}
+            annualCost={peekAnnualCost(freeText)}
+          />
         </>
       )}
 

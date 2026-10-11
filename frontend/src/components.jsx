@@ -45,17 +45,24 @@ const EXTRACTION_LABELS = {
   category: "Category",
   data_access_level: "Data access",
   requester_id: "Requester",
+  requester_conflict: "Requester conflict",
   urgency: "Urgency",
 };
 
-function formatValue(field, value) {
+function formatValue(field, value, employees = []) {
   if (field === "annual_cost_usd") {
     return `$${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  }
+  // A bare employee id tells the reader nothing; resolve it to who it is and
+  // which department they belong to, which is what drives the budget check.
+  if ((field === "requester_id" || field === "requester_conflict") && value) {
+    const person = employees.find((e) => e.employee_id === value);
+    return person ? `${person.name} (${value}) · ${person.department}` : String(value);
   }
   return String(value);
 }
 
-export function ExtractionPanel({ extractions }) {
+export function ExtractionPanel({ extractions, employees = [] }) {
   if (!extractions || extractions.length === 0) return null;
   return (
     <section className="panel extractions">
@@ -70,7 +77,9 @@ export function ExtractionPanel({ extractions }) {
             <span className="extraction-label">
               {EXTRACTION_LABELS[item.field] ?? item.field}
             </span>
-            <strong className="extraction-value">{formatValue(item.field, item.value)}</strong>
+            <strong className="extraction-value">
+              {formatValue(item.field, item.value, employees)}
+            </strong>
             <span className="muted small">“{item.evidence}”</span>
           </li>
         ))}
