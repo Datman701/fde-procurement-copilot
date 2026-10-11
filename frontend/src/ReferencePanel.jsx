@@ -1,7 +1,7 @@
 // "Policy & reference" — the source data behind every verdict, so a reviewer
-// can check the copilot's claims without leaving the page. Pure presentation:
-// App owns the fetch and passes the parsed payload down.
-import { useEffect, useState } from "react";
+// can check the copilot's claims without leaving the page. Rendered as a modal
+// dialog; pure presentation, App owns the open state.
+import { useEffect, useRef, useState } from "react";
 import { fetchReference } from "./api.js";
 
 const money = (n) =>
@@ -41,8 +41,8 @@ function DataAccess({ dataAccess, validityDays }) {
           ))}
         </ul>
         <p className="muted small">
-          Integrations matching cloud accounts, source code, production, credentials
-          or secrets also trigger review.
+          Integrations mentioning cloud accounts, source code, production,
+          credentials or secrets also trigger review.
         </p>
       </div>
       <div>
@@ -55,8 +55,8 @@ function DataAccess({ dataAccess, validityDays }) {
           ))}
         </ul>
         <p className="muted small">
-          A security assessment stays current for {validityDays} days; after that it
-          is expired and review is required again.
+          A security assessment stays current for {validityDays} days; after that
+          it is expired and review is required again.
         </p>
       </div>
     </div>
@@ -77,7 +77,7 @@ function Vendors({ vendors, referenceDate }) {
   return (
     <div>
       <input
-        className="text-input ref-search"
+        className="ref-search"
         type="search"
         placeholder="Filter vendors by name or status…"
         value={query}
@@ -172,11 +172,15 @@ function Budgets({ budgets }) {
   );
 }
 
-export default function ReferencePanel() {
+export default function ReferencePanel({ open, onClose }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const dialogRef = useRef(null);
+  const closeRef = useRef(null);
 
+  // Fetch once on first open, then keep it for the session.
   useEffect(() => {
+    if (!open || data) return undefined;
     const controller = new AbortController();
     fetchReference(controller.signal)
       .then(setData)
@@ -184,46 +188,85 @@ export default function ReferencePanel() {
         if (err.name !== "AbortError") setError(err.message);
       });
     return () => controller.abort();
-  }, []);
+  }, [open, data]);
+
+  // Move focus in on open, return it on close, and trap Escape.
+  useEffect(() => {
+    if (!open) return undefined;
+    closeRef.current?.focus();
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      dialogRef.current?.focus?.();
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   return (
-    <details className="panel reference">
-      <summary>
-        <h2 className="reference-title">2 · Policy &amp; reference data</h2>
-      </summary>
-
-      {error && <p className="error-text">Could not load reference data: {error}</p>}
-      {!data && !error && <p className="muted">Loading policy data…</p>}
-
-      {data && (
-        <div className="reference-body">
-          <p className="muted small">
-            Policy version <strong>{data.policy_version}</strong> · evaluated as of{" "}
-            <strong>{data.reference_date}</strong>. Every number below is read from
-            the same modules the guardrail uses, so it cannot drift from what the
-            copilot reports.
-          </p>
-
-          <h3>Approval thresholds</h3>
-          <Thresholds thresholds={data.thresholds} />
-          <p className="muted small">
-            New vendors above {money(data.new_vendor_legal_threshold_usd)} also need
-            legal review.
-          </p>
-
-          <h3>When is a human review required?</h3>
-          <DataAccess
-            dataAccess={data.data_access}
-            validityDays={data.security_review_validity_days}
-          />
-
-          <h3>Vendor registry</h3>
-          <Vendors vendors={data.vendors} referenceDate={data.reference_date} />
-
-          <h3>Department budgets</h3>
-          <Budgets budgets={data.budgets} />
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ref-title"
+        ref={dialogRef}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-head">
+          <h2 id="ref-title">Policy &amp; reference data</h2>
+          <button
+            type="button"
+            className="modal-close"
+            onClick={onClose}
+            ref={closeRef}
+            aria-label="Close policy and reference data"
+          >
+            ✕
+          </button>
         </div>
-      )}
-    </details>
+
+        <div className="modal-body">
+          {error && (
+            <p className="error-text">Could not load reference data: {error}</p>
+          )}
+          {!data && !error && <p className="muted">Loading policy data…</p>}
+
+          {data && (
+            <>
+              <p className="muted small">
+                Policy version <strong>{data.policy_version}</strong> · evaluated
+                as of <strong>{data.reference_date}</strong>. Every number below is
+                read from the same modules the guardrail uses, so it cannot drift
+                from what the copilot reports.
+              </p>
+
+              <h3>Approval thresholds</h3>
+              <Thresholds thresholds={data.thresholds} />
+              <p className="muted small">
+                New vendors above {money(data.new_vendor_legal_threshold_usd)} also
+                need legal review.
+              </p>
+
+              <h3>When is a human review required?</h3>
+              <DataAccess
+                dataAccess={data.data_access}
+                validityDays={data.security_review_validity_days}
+              />
+
+              <h3>Vendor registry</h3>
+              <Vendors vendors={data.vendors} referenceDate={data.reference_date} />
+
+              <h3>Department budgets</h3>
+              <Budgets budgets={data.budgets} />
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

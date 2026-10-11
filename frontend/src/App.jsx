@@ -26,6 +26,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const [handoffs, setHandoffs] = useState([]);
+  const [showReference, setShowReference] = useState(false);
 
   const analysisController = useRef(null);
   const abortReason = useRef(null);
@@ -129,7 +130,15 @@ export default function App() {
             software, change a budget, or override Security / Privacy / Legal.
           </p>
         </div>
-        <span className="chip">Policy 2026.09 · reference date 2026-09-30</span>
+        <button
+          type="button"
+          className="chip chip-btn"
+          onClick={() => setShowReference(true)}
+          aria-haspopup="dialog"
+        >
+          Policy 2026.09 · reference date 2026-09-30
+          <span className="chip-hint">view data</span>
+        </button>
       </header>
 
       <div className="layout">
@@ -157,7 +166,6 @@ export default function App() {
             canRun={canRun}
             onRun={analyze}
           />
-          <ReferencePanel />
         </div>
 
         <div className="results-column">
@@ -180,9 +188,22 @@ export default function App() {
       </div>
 
       <footer className="footer">
-        Recommendations are advisory; a human remains responsible for every approval and
-        exception.
+        Recommendations are advisory; a human remains responsible for every approval
+        and exception.{" "}
+        <button
+          type="button"
+          className="linkish"
+          onClick={() => setShowReference(true)}
+          aria-haspopup="dialog"
+        >
+          View the policy and source data behind this page
+        </button>
       </footer>
+
+      <ReferencePanel
+        open={showReference}
+        onClose={() => setShowReference(false)}
+      />
     </div>
   );
 }
