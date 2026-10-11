@@ -19,7 +19,7 @@ export default function App() {
   const [freeText, setFreeText] = useState("");
   const [requesterId, setRequesterId] = useState("");
   const [architecture, setArchitecture] = useState("A");
-  const [useCache, setUseCache] = useState(true);
+  const [useCache, setUseCache] = useState(false);
   const [simulateOutage, setSimulateOutage] = useState(false);
 
   const [loading, setLoading] = useState(false);
