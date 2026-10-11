@@ -805,3 +805,9 @@ summary {
   font-size: var(--fs-sm);
   line-height: 1.5;
 }
+
+.toggle-note {
+  margin: 0 0 var(--sp-2);
+  padding-left: calc(var(--fs-md) + var(--sp-2));
+  line-height: 1.5;
+}

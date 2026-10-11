@@ -247,10 +247,18 @@ export default function SetupPanel({
         />
         Simulate vendor-risk service outage
       </label>
+      <p className="muted small toggle-note">
+        Pretends the vendor-risk service is offline for this run. The copilot
+        still has to answer, so it must treat the missing check as a risk — a
+        failed lookup is never read as "approved". Expect{" "}
+        <code>vendor_risk_unavailable</code> and an escalation to Security and
+        Legal even on an otherwise trivial request. Useful for showing how the
+        system fails safe. Nothing is written to the data files.
+      </p>
       {simulateOutage && (
         <p className="small warn-note">
-          The copilot must treat a missing vendor check as a risk, never as a
-          favourable status.
+          Outage simulation is on — the next run will escalate rather than
+          proceed.
         </p>
       )}
 
